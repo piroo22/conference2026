@@ -7,36 +7,40 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; }
     
-    /* خلفية متدرجة وسحابية */
+    /* خلفية السماء والأرض الخضراء المتحركة */
     body { 
-      background: linear-gradient(180deg, #a1c4fd 0%, #c2e9fb 60%, #e0c3fc 100%);
-      color: #2c3e50; 
+      background: linear-gradient(180deg, #4facfe 0%, #00f2fe 45%, #43e97b 85%, #38f9d7 100%);
+      background-size: 100% 200%;
+      animation: skyShift 10s ease infinite alternate;
+      color: #1a202c; 
       min-height: 100vh;
       position: relative;
+      overflow-x: hidden;
     }
 
-    /* الصليب الشفاف في الخلفية */
-    body::before {
-      content: "┼";
+    @keyframes skyShift {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+
+    /* صلبان خفيفة منتشرة في الخلفية */
+    .cross-bg {
       position: fixed;
-      top: 50%;
-      right: 5%;
-      transform: translateY(-50%);
-      font-size: 280px;
-      color: rgba(255, 255, 255, 0.25);
+      font-size: 120px;
+      color: rgba(255, 255, 255, 0.2);
       pointer-events: none;
       z-index: 0;
     }
 
-    .container { max-width: 600px; margin: auto; padding: 15px; position: relative; z-index: 1; }
+    .container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 1; }
 
-    /* هيدر بعرض الصفحة بالكامل */
+    /* هيدر كامل بعرض الصفحة بتأثير زجاجي */
     .full-header {
       width: 100%;
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
@@ -46,74 +50,85 @@
       z-index: 10;
     }
 
-    .header-title { font-size: 20px; font-weight: bold; color: #1a365d; }
+    .header-right { text-align: right; }
+    .header-title { font-size: 18px; font-weight: 800; color: #0d3b66; }
+    .header-sub { font-size: 12px; color: #1d3557; font-weight: bold; }
 
-    /* القائمة الجانبية (3 شرط) */
-    .menu-icon { font-size: 26px; cursor: pointer; color: #1a365d; }
+    /* القائمة الجانبية في اليمين */
+    .menu-icon { font-size: 28px; cursor: pointer; color: #0d3b66; font-weight: bold; }
     
     .side-drawer {
       position: fixed;
       top: 0; right: -100%;
-      width: 260px; height: 100%;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-      transition: 0.3s ease;
+      width: 280px; height: 100%;
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+      transition: 0.4s ease;
       z-index: 100;
-      padding: 20px;
+      padding: 25px 20px;
     }
 
     .side-drawer.open { right: 0; }
-    .drawer-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .drawer-item:hover { background: #e2e8f0; }
+    .drawer-item { 
+      padding: 14px; margin-bottom: 10px; border-radius: 12px; 
+      cursor: pointer; font-weight: bold; color: #0d3b66;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
 
-    /* بطاقة الزجاج الشفاف */
+    /* كروت زجاجية شفافة بنمط Apple Glassmorphism */
     .glass-card {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 20px;
-      padding: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      padding: 22px;
       margin-top: 15px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
 
     input, select, button.action-btn { 
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; 
-      border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.8); 
-      font-size: 15px; outline: none;
+      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
+      border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); 
+      font-size: 15px; outline: none; font-weight: bold; color: #0d3b66;
     }
 
-    button.action-btn { background: #3182ce; color: white; border: none; font-weight: bold; cursor: pointer; }
-    button.action-btn:hover { background: #2b6cb0; }
+    button.action-btn { background: #0d3b66; color: white; border: none; cursor: pointer; }
 
-    /* عرض الأوض */
     .room-card {
-      background: rgba(255,255,255,0.6);
-      border-radius: 12px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 16px;
       padding: 15px;
-      margin-top: 10px;
-      border: 1px solid rgba(255,255,255,0.8);
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.6);
     }
-    .room-header { display: flex; justify-content: space-between; font-weight: bold; }
-    .member-list { margin-top: 8px; font-size: 14px; opacity: 0.9; }
 
-    .reader-frame { width: 100%; height: 500px; border: none; border-radius: 12px; }
+    .reader-frame { width: 100%; height: 500px; border: none; border-radius: 16px; }
   </style>
 </head>
 <body>
 
-  <!-- الهيدر الكامل بعرض الصفحة -->
+  <!-- صلبان خلفية ممتدة -->
+  <div class="cross-bg" style="top: 15%; right: 8%;">┼</div>
+  <div class="cross-bg" style="top: 60%; left: 10%;">┼</div>
+  <div class="cross-bg" style="top: 35%; left: 45%;">┼</div>
+
+  <!-- الهيدر الكامل -->
   <div class="full-header">
-    <div class="header-title">مؤتمر أبطال الإيمان 2026</div>
     <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <div class="header-right">
+      <div class="header-title">شعار أبطال الإيمان 2026</div>
+      <div class="header-sub">كنيسة السيدة العذراء والبابا كيرلس</div>
+    </div>
   </div>
 
-  <!-- القائمة الجانبية -->
+  <!-- القائمة الجانبية (يمين + زجاجية بالكامل) -->
   <div class="side-drawer" id="drawer">
-    <div style="text-align: left; cursor: pointer; font-weight: bold;" onclick="toggleMenu()">✕إغلاق</div>
-    <hr style="margin: 15px 0;">
+    <div style="text-align: left; cursor: pointer; font-weight: bold; color: #0d3b66; margin-bottom: 20px;" onclick="toggleMenu()">✕ إغلاق</div>
     <div class="drawer-item" onclick="navigate('main-view')">الصفحة الرئيسية</div>
     <div class="drawer-item" onclick="navigate('bible-view')">الإنجيل الكامل</div>
     <div class="drawer-item" onclick="navigate('agpeya-view')">الأجبية كاملة</div>
@@ -121,14 +136,14 @@
 
   <div class="container">
 
-    <!-- 1. شاشة تسجيل الدخول / إنشاء الحساب -->
+    <!-- تسجيل الدخول -->
     <div class="glass-card" id="auth-screen">
-      <h3 style="text-align: center; margin-bottom: 10px;">تسجيل الدخول</h3>
+      <h3 style="text-align: center; margin-bottom: 10px; color: #0d3b66;">تسجيل الدخول</h3>
       
       <label>الاسم الثلاثي أو الرباعي:</label>
       <input type="text" id="reg-name" placeholder="أدخل اسمك بالعربي">
 
-      <label style="margin-top:10px; display:block;">رقم التليفون (بالإنجليزي - 11 رقم):</label>
+      <label style="margin-top:10px; display:block;">رقم التليفون (11 رقم بالإنجليزي):</label>
       <input type="tel" id="reg-phone" maxlength="11" placeholder="01XXXXXXXXX" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
       <label style="margin-top:10px; display:block;">الفصل الدراسي:</label>
@@ -141,45 +156,43 @@
       <button class="action-btn" onclick="registerUser()">دخول</button>
     </div>
 
-    <!-- 2. شاشة اختيار الأوضة -->
+    <!-- اختيار الأوضة -->
     <div class="glass-card" id="room-select-screen" style="display: none;">
-      <h3>اختر غرفتك</h3>
-      <p style="font-size: 13px; color: #4a5568; margin-top: 5px;">تنبيه: بمجرد الحفظ لن تتمكن من تغيير الأوضة مرة أخرى.</p>
-
+      <h3 style="color: #0d3b66;">اختر غرفتك</h3>
+      <p style="font-size: 13px; color: #1d3557; margin-top: 5px;">تنبيه: لا يمكن تغيير الأوضة بعد الاختيار.</p>
       <div id="rooms-container"></div>
     </div>
 
-    <!-- 3. الشاشة الرئيسية للمخدوم -->
+    <!-- الرئيسية -->
     <div id="main-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3>مرحباً، <span id="user-display-name"></span></h3>
-        <p style="font-size: 14px; opacity: 0.8; margin-top: 4px;" id="user-display-class"></p>
+        <h3 style="color: #0d3b66;">مرحباً، <span id="user-display-name"></span></h3>
+        <p style="font-size: 14px; opacity: 0.9; margin-top: 4px;" id="user-display-class"></p>
       </div>
 
       <div class="glass-card">
-        <h3>بيانات النقاط والتيم</h3>
-        <div style="font-size: 28px; font-weight: bold; color: #2b6cb0; margin: 10px 0;">نقاطك: <span id="user-points">0</span></div>
-        <p>اسم التيم: <strong>أبطال الإيمان</strong></p>
+        <h3 style="color: #0d3b66;">النقاط والتيم</h3>
+        <div style="font-size: 32px; font-weight: bold; color: #0d3b66; margin: 10px 0;">نقاطك: <span id="user-points">0</span></div>
       </div>
 
       <div class="glass-card">
-        <h3>تفاصيل أوضتك</h3>
+        <h3 style="color: #0d3b66;">تفاصيل أوضتك</h3>
         <div id="my-room-details"></div>
       </div>
     </div>
 
-    <!-- 4. شاشة الإنجيل -->
+    <!-- الإنجيل -->
     <div id="bible-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3>الكتاب المقدس الكامل</h3>
+        <h3 style="color: #0d3b66; margin-bottom: 10px;">الكتاب المقدس الكامل</h3>
         <iframe class="reader-frame" src="https://st-takla.org/pub_Deut/Deut_Read-Holy-Bible_.html"></iframe>
       </div>
     </div>
 
-    <!-- 5. شاشة الأجبية -->
+    <!-- الأجبية -->
     <div id="agpeya-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3>صلوات الأجبية كاملة</h3>
+        <h3 style="color: #0d3b66; margin-bottom: 10px;">صلوات الأجبية كاملة</h3>
         <iframe class="reader-frame" src="https://st-takla.org/Agpeya_.html"></iframe>
       </div>
     </div>
@@ -187,10 +200,9 @@
   </div>
 
 <script>
-  // بيانات محاكاة للأوض (يمكن ربطها بـ Firebase لاحقاً)
   let roomsData = [
-    { id: 1, servant: "أ. مينا خادم", members: ["بيشوي جرجس", "أنطون هاني"] },
-    { id: 2, servant: "أ. كيرلس خادم", members: ["كيرلس عماد"] },
+    { id: 1, servant: "أ. مينا خادم", members: ["بيشوي جرجس"] },
+    { id: 2, servant: "أ. كيرلس خادم", members: [] },
     { id: 3, servant: "أ. يوسف خادم", members: [] },
     { id: 4, servant: "أ. مارك خادم", members: [] },
     { id: 5, servant: "أ. بيتر خادم", members: [] }
@@ -208,12 +220,11 @@
     const userClass = document.getElementById('reg-class').value;
 
     if (!name || phone.length !== 11) {
-      alert("برجاء إدخال اسمك الكامل ورقم تليفون صحيح مكون من 11 رقم بالإنجليزي");
+      alert("برجاء إدخال الاسم الكامل ورقم تليفون 11 رقم");
       return;
     }
 
     activeUser = { name, phone, userClass, roomId: null };
-    
     document.getElementById('auth-screen').style.display = 'none';
     renderRooms();
     document.getElementById('room-select-screen').style.display = 'block';
@@ -222,23 +233,22 @@
   function renderRooms() {
     const container = document.getElementById('rooms-container');
     container.innerHTML = '';
-
     roomsData.forEach(room => {
       const isFull = room.members.length >= 4;
       container.innerHTML += `
         <div class="room-card">
-          <div class="room-header">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#0d3b66;">
             <span>أوضة رقم ${room.id}</span>
             <span>(${room.members.length} / 4)</span>
           </div>
-          <div class="member-list">
+          <div style="margin-top:8px; font-size:14px;">
             <strong>الخادم:</strong> ${room.servant}<br>
-            <strong>المخدومين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'لا يوجد أحد بعد'}
+            <strong>المخدومين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'خالية'}
           </div>
           <button class="action-btn" style="margin-top:8px;" 
             ${isFull ? 'disabled style="background:#ccc;"' : ''} 
             onclick="selectRoom(${room.id})">
-            ${isFull ? 'الأوضة مكتملة' : 'اختيار الأوضة وحفظ'}
+            ${isFull ? 'مكتملة' : 'حفظ واختيار الأوضة'}
           </button>
         </div>
       `;
@@ -250,13 +260,9 @@
     if (room && room.members.length < 4) {
       room.members.push(activeUser.name);
       activeUser.roomId = roomId;
-
       document.getElementById('room-select-screen').style.display = 'none';
-      
-      // إعداد بيانات الشاشة الرئيسية
       document.getElementById('user-display-name').innerText = activeUser.name;
       document.getElementById('user-display-class').innerText = activeUser.userClass;
-      
       updateMyRoomUI();
       document.getElementById('main-view').style.display = 'block';
     }
@@ -266,8 +272,8 @@
     const room = roomsData.find(r => r.id === activeUser.roomId);
     document.getElementById('my-room-details').innerHTML = `
       <p><strong>أوضة رقم:</strong> ${room.id}</p>
-      <p><strong>الخادم المسؤول:</strong> ${room.servant}</p>
-      <p><strong>المتواجدون معك بالنعمة:</strong> ${room.members.join(', ')}</p>
+      <p><strong>الخادم:</strong> ${room.servant}</p>
+      <p><strong>المتواجدون معك:</strong> ${room.members.join(', ')}</p>
     `;
   }
 
