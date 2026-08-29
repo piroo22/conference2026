@@ -4,215 +4,277 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مؤتمر أبطال الإيمان 2026</title>
-  <!-- مكتبة قراءة الـ QR Code عبر الكاميرا -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; }
     
-    /* خلفية الطبيعة والماء والسماء مع انيميشن حركة هادئة */
+    /* خلفية متدرجة وسحابية */
     body { 
-      background: linear-gradient(180deg, #6dd5ed 0%, #2193b0 50%, #11998e 75%, #38ef7d 100%);
-      background-size: 100% 200%;
-      animation: skyAnimation 12s ease infinite alternate;
-      color: #1a202c; 
-      padding: 15px; 
+      background: linear-gradient(180deg, #a1c4fd 0%, #c2e9fb 60%, #e0c3fc 100%);
+      color: #2c3e50; 
       min-height: 100vh;
       position: relative;
     }
 
-    @keyframes skyAnimation {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 0% 100%; }
-    }
-
-    /* الصليب المائي البارز على الجانب */
-    .side-cross {
+    /* الصليب الشفاف في الخلفية */
+    body::before {
+      content: "┼";
       position: fixed;
-      top: 10%;
-      left: 5%;
-      font-size: 180px;
+      top: 50%;
+      right: 5%;
+      transform: translateY(-50%);
+      font-size: 280px;
       color: rgba(255, 255, 255, 0.25);
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
       pointer-events: none;
       z-index: 0;
     }
 
-    .container { max-width: 750px; margin: auto; position: relative; z-index: 1; }
+    .container { max-width: 600px; margin: auto; padding: 15px; position: relative; z-index: 1; }
 
-    /* تصميم Glassmorphism شفاف مثل أبل */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.35);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 24px;
-      padding: 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    /* هيدر بعرض الصفحة بالكامل */
+    .full-header {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .header-title { text-align: center; color: #0f4c81; font-size: 28px; font-weight: 800; }
+    .header-title { font-size: 20px; font-weight: bold; color: #1a365d; }
+
+    /* القائمة الجانبية (3 شرط) */
+    .menu-icon { font-size: 26px; cursor: pointer; color: #1a365d; }
     
-    /* التبويبات والأزرار */
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
-    .nav-btn { 
-      flex: 1; padding: 12px; border: none; background: rgba(255, 255, 255, 0.5); 
-      color: #0f4c81; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 15px;
+    .side-drawer {
+      position: fixed;
+      top: 0; right: -100%;
+      width: 260px; height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      transition: 0.3s ease;
+      z-index: 100;
+      padding: 20px;
     }
-    .nav-btn.active { background: #0f4c81; color: #fff; }
+
+    .side-drawer.open { right: 0; }
+    .drawer-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .drawer-item:hover { background: #e2e8f0; }
+
+    /* بطاقة الزجاج الشفاف */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    }
 
     input, select, button.action-btn { 
-      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
-      border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.8); 
-      font-size: 16px; font-weight: bold; color: #2d3748; outline: none;
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; 
+      border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.8); 
+      font-size: 15px; outline: none;
     }
-    button.action-btn { background: #0f4c81; color: #fff; border: none; cursor: pointer; }
 
-    /* الكاميرا وشاشة الماسح */
-    #reader { width: 100%; border-radius: 15px; overflow: hidden; margin-top: 10px; }
+    button.action-btn { background: #3182ce; color: white; border: none; font-weight: bold; cursor: pointer; }
+    button.action-btn:hover { background: #2b6cb0; }
 
-    .reader-frame {
-      width: 100%; height: 60vh; border: none; border-radius: 15px; background: #fff;
+    /* عرض الأوض */
+    .room-card {
+      background: rgba(255,255,255,0.6);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 10px;
+      border: 1px solid rgba(255,255,255,0.8);
     }
+    .room-header { display: flex; justify-content: space-between; font-weight: bold; }
+    .member-list { margin-top: 8px; font-size: 14px; opacity: 0.9; }
+
+    .reader-frame { width: 100%; height: 500px; border: none; border-radius: 12px; }
   </style>
 </head>
 <body>
 
-<div class="side-cross">┼</div>
-
-<div class="container">
-  <div class="glass-card">
-    <h1 class="header-title">مؤتمر أبطال الإيمان 2026</h1>
+  <!-- الهيدر الكامل بعرض الصفحة -->
+  <div class="full-header">
+    <div class="header-title">مؤتمر أبطال الإيمان 2026</div>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
   </div>
 
-  <!-- تسجيل دخول منظم -->
-  <div class="glass-card" id="auth-box">
-    <h3 style="margin-bottom:15px; text-align:center;">تسجيل البيانات</h3>
-    
-    <label>الرتبة:</label>
-    <select id="user-role" onchange="toggleRoleUI()">
-      <option value="guest">مخدوم</option>
-      <option value="host">خادم</option>
-    </select>
-
-    <label style="margin-top:10px; display:block;">الاسم بالكامل:</label>
-    <input type="text" id="username" placeholder="اكتب اسمك">
-
-    <label style="margin-top:10px; display:block;">رقم الموبايل:</label>
-    <input type="tel" id="user-phone" placeholder="01xxxxxxxxx">
-
-    <label style="margin-top:10px; display:block;">الفصل / المجموعة:</label>
-    <select id="user-class">
-      <option value="1">فصل 1 (أرسلها لي لتحديد الأسماء)</option>
-      <option value="2">فصل 2</option>
-    </select>
-
-    <button class="action-btn" onclick="login()">دخول للمؤتمر</button>
+  <!-- القائمة الجانبية -->
+  <div class="side-drawer" id="drawer">
+    <div style="text-align: left; cursor: pointer; font-weight: bold;" onclick="toggleMenu()">✕إغلاق</div>
+    <hr style="margin: 15px 0;">
+    <div class="drawer-item" onclick="navigate('main-view')">الصفحة الرئيسية</div>
+    <div class="drawer-item" onclick="navigate('bible-view')">الإنجيل الكامل</div>
+    <div class="drawer-item" onclick="navigate('agpeya-view')">الأجبية كاملة</div>
   </div>
 
-  <!-- المحتوى للتطبيقات -->
-  <div id="app-content" style="display: none;">
-    <div class="nav-tabs">
-      <button class="nav-btn active" onclick="showTab('main-tab')">الرئيسية</button>
-      <button class="nav-btn" onclick="showTab('bible-tab')">الإنجيل الكامل</button>
-      <button class="nav-btn" onclick="showTab('agpeya-tab')">الأجبية كاملة</button>
-      <button class="nav-btn host-only" onclick="showTab('admin-tab')" style="display:none;">لوحة الخادم</button>
+  <div class="container">
+
+    <!-- 1. شاشة تسجيل الدخول / إنشاء الحساب -->
+    <div class="glass-card" id="auth-screen">
+      <h3 style="text-align: center; margin-bottom: 10px;">تسجيل الدخول</h3>
+      
+      <label>الاسم الثلاثي أو الرباعي:</label>
+      <input type="text" id="reg-name" placeholder="أدخل اسمك بالعربي">
+
+      <label style="margin-top:10px; display:block;">رقم التليفون (بالإنجليزي - 11 رقم):</label>
+      <input type="tel" id="reg-phone" maxlength="11" placeholder="01XXXXXXXXX" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+      <label style="margin-top:10px; display:block;">الفصل الدراسي:</label>
+      <select id="reg-class">
+        <option value="أولى ثانوي - البابا اثناسيوس">أولى ثانوي - البابا اثناسيوس</option>
+        <option value="ثانية ثانوي - البابا كيرلس عمود الدين">ثانية ثانوي - البابا كيرلس عمود الدين</option>
+        <option value="ثالثة ثانوي - البابا ديسقوروس">ثالثة ثانوي - البابا ديسقوروس</option>
+      </select>
+
+      <button class="action-btn" onclick="registerUser()">دخول</button>
     </div>
 
-    <!-- 1. الرئيسية -->
-    <div id="main-tab" class="tab-content">
-      <div class="glass-card guest-only">
-        <h3 style="text-align:center;">نقاطك الحالية: <span id="my-points" style="color:#0f4c81; font-size:32px;">0</span></h3>
-      </div>
+    <!-- 2. شاشة اختيار الأوضة -->
+    <div class="glass-card" id="room-select-screen" style="display: none;">
+      <h3>اختر غرفتك</h3>
+      <p style="font-size: 13px; color: #4a5568; margin-top: 5px;">تنبيه: بمجرد الحفظ لن تتمكن من تغيير الأوضة مرة أخرى.</p>
+
+      <div id="rooms-container"></div>
+    </div>
+
+    <!-- 3. الشاشة الرئيسية للمخدوم -->
+    <div id="main-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3>تسكين الأوضة</h3>
-        <input type="text" id="room-num" placeholder="رقم غرفتك">
-        <button class="action-btn" onclick="alert('تم حفظ رقم الأوضة')">حفظ الأوضة</button>
+        <h3>مرحباً، <span id="user-display-name"></span></h3>
+        <p style="font-size: 14px; opacity: 0.8; margin-top: 4px;" id="user-display-class"></p>
+      </div>
+
+      <div class="glass-card">
+        <h3>بيانات النقاط والتيم</h3>
+        <div style="font-size: 28px; font-weight: bold; color: #2b6cb0; margin: 10px 0;">نقاطك: <span id="user-points">0</span></div>
+        <p>اسم التيم: <strong>أبطال الإيمان</strong></p>
+      </div>
+
+      <div class="glass-card">
+        <h3>تفاصيل أوضتك</h3>
+        <div id="my-room-details"></div>
       </div>
     </div>
 
-    <!-- 2. الإنجيل الكامل والقطمارس من مصدر رسمي كنسي مباشرة -->
-    <div id="bible-tab" class="tab-content" style="display: none;">
+    <!-- 4. شاشة الإنجيل -->
+    <div id="bible-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3>الكتاب المقدس الكامل (تصفح وقراءة)</h3>
+        <h3>الكتاب المقدس الكامل</h3>
         <iframe class="reader-frame" src="https://st-takla.org/pub_Deut/Deut_Read-Holy-Bible_.html"></iframe>
       </div>
     </div>
 
-    <!-- 3. الأجبية كاملة -->
-    <div id="agpeya-tab" class="tab-content" style="display: none;">
+    <!-- 5. شاشة الأجبية -->
+    <div id="agpeya-view" class="app-screen" style="display: none;">
       <div class="glass-card">
         <h3>صلوات الأجبية كاملة</h3>
         <iframe class="reader-frame" src="https://st-takla.org/Agpeya_.html"></iframe>
       </div>
     </div>
 
-    <!-- 4. أدوات الخادم: مسح الكود بالكاميرا وإضافة النقاط والبحث والتسكين -->
-    <div id="admin-tab" class="tab-content" style="display: none;">
-      <!-- الماسح الضوئي (الكاميرا) -->
-      <div class="glass-card">
-        <h3>فتح الكاميرا لقرّاءة QR Code المخدوم</h3>
-        <button class="action-btn" onclick="startScanner()">تشغيل الكاميرا الآن</button>
-        <div id="reader"></div>
-        <p id="scanner-result" style="margin-top:10px; font-weight:bold; color:#0f4c81;"></p>
-      </div>
-
-      <!-- البحث اليدوي وإضافة النقاط -->
-      <div class="glass-card">
-        <h3>بحث وإضافة النقاط</h3>
-        <input type="text" id="search-user" placeholder="ابحث باسم المخدوم أو الكود...">
-        <input type="number" id="add-pts-val" placeholder="عدد النقاط">
-        <button class="action-btn" onclick="grantPoints()">إضافة النقاط</button>
-      </div>
-
-      <!-- إدخال وتعديل التسكين -->
-      <div class="glass-card">
-        <h3>إدارة تسكين الغرف</h3>
-        <input type="text" id="target-room-user" placeholder="اسم المخدوم">
-        <input type="text" id="target-room-no" placeholder="رقم الغرفة">
-        <button class="action-btn" onclick="alert('تم تحديث غرفة المخدوم')">تسكين في الغرفة</button>
-      </div>
-    </div>
-
   </div>
-</div>
 
 <script>
-  function login() {
-    const name = document.getElementById('username').value;
-    const role = document.getElementById('user-role').value;
-    if(!name) return alert('يرجى أدخال الاسم');
+  // بيانات محاكاة للأوض (يمكن ربطها بـ Firebase لاحقاً)
+  let roomsData = [
+    { id: 1, servant: "أ. مينا خادم", members: ["بيشوي جرجس", "أنطون هاني"] },
+    { id: 2, servant: "أ. كيرلس خادم", members: ["كيرلس عماد"] },
+    { id: 3, servant: "أ. يوسف خادم", members: [] },
+    { id: 4, servant: "أ. مارك خادم", members: [] },
+    { id: 5, servant: "أ. بيتر خادم", members: [] }
+  ];
 
-    document.getElementById('auth-box').style.display = 'none';
-    document.getElementById('app-content').style.display = 'block';
+  let activeUser = null;
 
-    if(role === 'host') {
-      document.querySelectorAll('.host-only').forEach(e => e.style.display = 'block');
-      document.querySelectorAll('.guest-only').forEach(e => e.style.display = 'none');
+  function toggleMenu() {
+    document.getElementById('drawer').classList.toggle('open');
+  }
+
+  function registerUser() {
+    const name = document.getElementById('reg-name').value;
+    const phone = document.getElementById('reg-phone').value;
+    const userClass = document.getElementById('reg-class').value;
+
+    if (!name || phone.length !== 11) {
+      alert("برجاء إدخال اسمك الكامل ورقم تليفون صحيح مكون من 11 رقم بالإنجليزي");
+      return;
     }
+
+    activeUser = { name, phone, userClass, roomId: null };
+    
+    document.getElementById('auth-screen').style.display = 'none';
+    renderRooms();
+    document.getElementById('room-select-screen').style.display = 'block';
   }
 
-  function showTab(id) {
-    document.querySelectorAll('.tab-content').forEach(e => e.style.display = 'none');
-    document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-    document.getElementById(id).style.display = 'block';
-    event.target.classList.add('active');
-  }
+  function renderRooms() {
+    const container = document.getElementById('rooms-container');
+    container.innerHTML = '';
 
-  /* تشغيل كاميرا الهاتف لقرّاءة الـ QR Code */
-  function startScanner() {
-    const html5LtCode = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-    html5LtCode.render((decodedText) => {
-      document.getElementById('scanner-result').innerText = "تم مسح الكود: " + decodedText;
-      document.getElementById('search-user').value = decodedText;
-      html5LtCode.clear();
+    roomsData.forEach(room => {
+      const isFull = room.members.length >= 4;
+      container.innerHTML += `
+        <div class="room-card">
+          <div class="room-header">
+            <span>أوضة رقم ${room.id}</span>
+            <span>(${room.members.length} / 4)</span>
+          </div>
+          <div class="member-list">
+            <strong>الخادم:</strong> ${room.servant}<br>
+            <strong>المخدومين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'لا يوجد أحد بعد'}
+          </div>
+          <button class="action-btn" style="margin-top:8px;" 
+            ${isFull ? 'disabled style="background:#ccc;"' : ''} 
+            onclick="selectRoom(${room.id})">
+            ${isFull ? 'الأوضة مكتملة' : 'اختيار الأوضة وحفظ'}
+          </button>
+        </div>
+      `;
     });
   }
 
-  function grantPoints() {
-    const u = document.getElementById('search-user').value;
-    const p = document.getElementById('add-pts-val').value;
-    if(u && p) alert(`تم إضافة ${p} نقطة للمخدوم: ${u}`);
+  function selectRoom(roomId) {
+    const room = roomsData.find(r => r.id === roomId);
+    if (room && room.members.length < 4) {
+      room.members.push(activeUser.name);
+      activeUser.roomId = roomId;
+
+      document.getElementById('room-select-screen').style.display = 'none';
+      
+      // إعداد بيانات الشاشة الرئيسية
+      document.getElementById('user-display-name').innerText = activeUser.name;
+      document.getElementById('user-display-class').innerText = activeUser.userClass;
+      
+      updateMyRoomUI();
+      document.getElementById('main-view').style.display = 'block';
+    }
+  }
+
+  function updateMyRoomUI() {
+    const room = roomsData.find(r => r.id === activeUser.roomId);
+    document.getElementById('my-room-details').innerHTML = `
+      <p><strong>أوضة رقم:</strong> ${room.id}</p>
+      <p><strong>الخادم المسؤول:</strong> ${room.servant}</p>
+      <p><strong>المتواجدون معك بالنعمة:</strong> ${room.members.join(', ')}</p>
+    `;
+  }
+
+  function navigate(screenId) {
+    toggleMenu();
+    document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
+    document.getElementById(screenId).style.display = 'block';
   }
 </script>
 </body>
