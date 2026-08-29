@@ -4,158 +4,146 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مؤتمر أبطال الإيمان 2026</title>
-  <!-- مكتبة توليد الـ QR Code للمخدوم -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; }
     
-    /* خلفية متناسقة مع ألوان الشعار */
     body { 
-      background: #fbf8f3 linear-gradient(180deg, #fceabb 0%, #f8b500 100%);
-      background-attachment: fixed;
-      color: #1c1c1e; 
+      background: linear-gradient(180deg, #4facfe 0%, #00f2fe 45%, #43e97b 85%, #38f9d7 100%);
+      background-size: 100% 200%;
+      animation: skyShift 10s ease infinite alternate;
+      color: #1a202c; 
       min-height: 100vh;
-      padding-bottom: 30px;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* هيدر بنمط Apple Glassmorphism */
+    @keyframes skyShift {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+
+    .cross-bg {
+      position: fixed;
+      font-size: 140px;
+      color: rgba(255, 255, 255, 0.22);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 1; }
+
     .full-header {
       width: 100%;
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 10;
     }
 
-    .header-logo-container { display: flex; align-items: center; gap: 10px; }
-    .header-logo { width: 42px; height: 42px; border-radius: 10px; object-fit: contain; }
-    .header-title { font-size: 16px; font-weight: 800; color: #1a365d; }
-    .header-sub { font-size: 11px; color: #4a5568; font-weight: bold; }
+    .header-right { text-align: right; }
+    .header-title { font-size: 18px; font-weight: 800; color: #0d3b66; }
+    .header-sub { font-size: 12px; color: #1d3557; font-weight: bold; }
 
-    /* القائمة الجانبية (محجوبة قبل تسجيل الدخول) */
-    .menu-icon { font-size: 26px; cursor: pointer; color: #1a365d; display: none; }
+    .menu-icon { font-size: 28px; cursor: pointer; color: #0d3b66; font-weight: bold; }
     
     .side-drawer {
       position: fixed;
       top: 0; right: -100%;
       width: 280px; height: 100%;
-      background: rgba(255, 255, 255, 0.65);
+      background: rgba(255, 255, 255, 0.35);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border-left: 1px solid rgba(255, 255, 255, 0.5);
       box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-      transition: 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
-      z-index: 200;
+      transition: 0.4s ease;
+      z-index: 100;
       padding: 25px 20px;
     }
 
     .side-drawer.open { right: 0; }
     .drawer-item { 
-      padding: 14px; margin-bottom: 10px; border-radius: 14px; 
-      cursor: pointer; font-weight: bold; color: #1a365d;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      display: flex; align-items: center; gap: 10px;
+      display: block;
+      text-decoration: none;
+      padding: 14px; margin-bottom: 10px; border-radius: 12px; 
+      cursor: pointer; font-weight: bold; color: #0d3b66;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      text-align: center;
     }
 
-    .container { max-width: 600px; margin: auto; padding: 15px; }
-
-    /* كروت Apple Plus Glassmorphism */
     .glass-card {
-      background: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.3);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 24px;
-      padding: 20px;
+      padding: 22px;
       margin-top: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
 
-    /* تنبيه الخادم النبضي */
-    .notification-banner {
-      background: rgba(235, 87, 87, 0.2);
-      border: 1px solid #eb5757;
-      color: #900c3f;
-      padding: 12px;
-      border-radius: 14px;
-      margin-bottom: 15px;
-      font-size: 13px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    input, select, button.action-btn, .link-btn { 
+      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
+      border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); 
+      font-size: 15px; outline: none; font-weight: bold; color: #0d3b66;
+      text-align: center; text-decoration: none; display: inline-block;
     }
 
-    input, select, button.action-btn { 
-      width: 100%; padding: 14px; margin-top: 10px; border-radius: 14px; 
-      border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); 
-      font-size: 15px; outline: none; font-weight: bold; color: #1a365d;
+    button.action-btn, .link-btn { background: #0d3b66; color: white; border: none; cursor: pointer; }
+
+    .room-card {
+      background: rgba(255,255,255,0.4);
+      border-radius: 16px;
+      padding: 15px;
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.6);
     }
 
-    button.action-btn { background: #1a365d; color: white; border: none; cursor: pointer; transition: 0.2s; }
-    button.action-btn:hover { background: #2b4c7e; }
-
-    /* أزرار الشبكة للاختيارات */
-    .grid-btns { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 12px; }
-    .sub-btn {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      padding: 12px 8px;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: bold;
-      cursor: pointer;
-      color: #1a365d;
+    .reader-frame {
+      width: 100%;
+      height: 550px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.8);
     }
-    .sub-btn:hover { background: #1a365d; color: white; }
-
-    .reader-frame { width: 100%; height: 500px; border: none; border-radius: 16px; background: #fff; }
-    #qrcode img { margin: auto; border-radius: 10px; border: 4px solid #fff; }
   </style>
 </head>
 <body>
 
-  <!-- الهيدر الرئيسي -->
+  <div class="cross-bg" style="top: 12%; right: 6%;">┼</div>
+  <div class="cross-bg" style="top: 65%; left: 8%;">┼</div>
+
   <div class="full-header">
-    <div class="header-logo-container">
-      <img src="IMG-20260830-WA0000.jpg" class="header-logo" alt="Logo">
-      <div>
-        <div class="header-title">أبطال الإيمان 2026</div>
-        <div class="header-sub">كنيسة العذراء والبابا كيرلس</div>
-      </div>
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <div class="header-right">
+      <div class="header-title">أبطال الإيمان 2026</div>
+      <div class="header-sub">كنيسة السيدة العذراء والبابا كيرلس</div>
     </div>
-    <!-- زر القائمة المظلم محجوب حتى الدخول -->
-    <div class="menu-icon" id="menu-btn" onclick="toggleMenu()">☰</div>
   </div>
 
-  <!-- القائمة الجانبية -->
   <div class="side-drawer" id="drawer">
-    <div style="text-align: left; cursor: pointer; font-weight: bold; color: #1a365d; margin-bottom: 20px;" onclick="toggleMenu()">✕ إغلاق</div>
-    <div class="drawer-item" onclick="navigate('main-view')">🏠 الصفحة الرئيسية</div>
-    <div class="drawer-item" onclick="navigate('card-view')">💳 كارت المخدوم (QR)</div>
-    <div class="drawer-item" onclick="navigate('bible-view')">📖 الكتاب المقدس</div>
-    <div class="drawer-item" onclick="navigate('agpeya-view')">☦️ الأجبية المقدسة</div>
+    <div style="text-align: left; cursor: pointer; font-weight: bold; color: #0d3b66; margin-bottom: 20px;" onclick="toggleMenu()">✕ إغلاق</div>
+    
+    <div class="drawer-item" onclick="navigate('main-view')">الصفحة الرئيسية</div>
+    <div class="drawer-item" onclick="navigate('agpeya-katamars-view')">الأجبية من القطمارس</div>
+    <a href="https://katamars.app/" target="_blank" class="drawer-item">فتح القطمارس في صفحة جديدة ↗</a>
   </div>
 
   <div class="container">
 
-    <!-- 1. شاشة تسجيل الدخول -->
+    <!-- 1. تسجيل الدخول -->
     <div class="glass-card" id="auth-screen">
-      <div style="text-align: center; margin-bottom: 15px;">
-        <img src="IMG-20260830-WA0000.jpg" style="width: 110px; border-radius: 15px;" alt="Logo">
-        <h2 style="color: #1a365d; margin-top: 10px;">أبطال الإيمان 2026</h2>
-      </div>
+      <h3 style="text-align: center; margin-bottom: 10px; color: #0d3b66;">تسجيل الدخول</h3>
       
-      <label>الاسم الكامل (ثلاثي أو رباعي):</label>
-      <input type="text" id="reg-name" placeholder="اكتب اسمك هنا">
+      <label>الاسم الكامل:</label>
+      <input type="text" id="reg-name" placeholder="أدخل اسمك الثلاثي/الرباعي">
 
       <label style="margin-top:10px; display:block;">رقم التليفون (11 رقم بالإنجليزي):</label>
       <input type="tel" id="reg-phone" maxlength="11" placeholder="01XXXXXXXXX" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
@@ -167,86 +155,45 @@
         <option value="ثالثة ثانوي - البابا ديسقوروس">ثالثة ثانوي - البابا ديسقوروس</option>
       </select>
 
-      <button class="action-btn" onclick="registerUser()">تسجيل الدخول</button>
+      <button class="action-btn" onclick="registerUser()">دخول</button>
     </div>
 
-    <!-- 2. شاشة اختيار الأوضة -->
+    <!-- 2. اختيار الأوضة -->
     <div class="glass-card" id="room-select-screen" style="display: none;">
-      <h3 style="color: #1a365d;">اختر غرفتك</h3>
-      <p style="font-size: 12px; color: #4a5568; margin-top: 4px;">تنبيه: يتم الحفظ فورياً ولا يمكن تعديل الغرفة لاحقاً.</p>
+      <h3 style="color: #0d3b66;">اختر غرفتك</h3>
+      <p style="font-size: 13px; color: #1d3557; margin-top: 5px;">تنبيه: لا يمكن تغيير الأوضة بعد الحفظ.</p>
       <div id="rooms-container"></div>
     </div>
 
-    <!-- 3. الشاشة الرئيسية -->
+    <!-- 3. الرئيسية -->
     <div id="main-view" class="app-screen" style="display: none;">
-      <!-- إشعار الخادم عند النزول -->
-      <div class="notification-banner" id="servant-notify">
-        🔔 إشعار الخادم: تم تسجيل حضورك بنجاح وتحديث بيانات التسكين.
+      <div class="glass-card">
+        <h3 style="color: #0d3b66;">مرحباً، <span id="user-display-name"></span></h3>
+        <p style="font-size: 14px; opacity: 0.9; margin-top: 4px;" id="user-display-class"></p>
       </div>
 
       <div class="glass-card">
-        <h3 style="color: #1a365d;">مرحباً بطل الإيمان، <span id="user-display-name"></span></h3>
-        <p style="font-size: 13px; color: #4a5568; margin-top: 4px;" id="user-display-class"></p>
+        <h3 style="color: #0d3b66;">مجموع نقاطك</h3>
+        <div style="font-size: 32px; font-weight: bold; color: #0d3b66; margin: 10px 0;"><span id="user-points">0</span> نقطة</div>
       </div>
 
       <div class="glass-card">
-        <h3 style="color: #1a365d;">مجموع النقاط</h3>
-        <div style="font-size: 36px; font-weight: 800; color: #1a365d; margin: 10px 0;">
-          <span id="user-points">0</span> <span style="font-size:16px;">نقطة</span>
-        </div>
+        <h3 style="color: #0d3b66;">بيانات أوضتك</h3>
+        <div id="my-room-details"></div>
       </div>
 
       <div class="glass-card">
-        <h3 style="color: #1a365d;">تفاصيل الإقامة والغرفة</h3>
-        <div id="my-room-details" style="margin-top: 8px; line-height: 1.6;"></div>
+        <h3 style="color: #0d3b66; margin-bottom:10px;">صلوات الأجبية (القطمارس)</h3>
+        <button class="action-btn" onclick="navigate('agpeya-katamars-view')">عرض الأجبية من القطمارس</button>
+        <a href="https://katamars.app/" target="_blank" class="link-btn" style="background:#1d3557;">فتح موقع القطمارس المباشر ↗</a>
       </div>
     </div>
 
-    <!-- 4. شاشة كارت المخدوم و QR Code (لإضافة النقاط) -->
-    <div id="card-view" class="app-screen" style="display: none;">
-      <div class="glass-card" style="text-align: center;">
-        <h3 style="color: #1a365d; margin-bottom: 5px;">كارت المخدوم الذكي</h3>
-        <p style="font-size: 12px; color: #4a5568; margin-bottom: 15px;">اعرض هذا الكود للخادم لإضافة النقاط الخاصة بك</p>
-        
-        <div id="qrcode" style="display: flex; justify-content: center; margin: 15px 0;"></div>
-        
-        <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 12px; margin-top: 10px;">
-          <strong id="card-user-id" style="color: #1a365d;">ID: ---</strong>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. الكتاب المقدس (تفصيلي بالعهدين) -->
-    <div id="bible-view" class="app-screen" style="display: none;">
+    <!-- 4. شاشة عرض القطمارس داخل الموقع -->
+    <div id="agpeya-katamars-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3 style="color: #1a365d;">الكتاب المقدس</h3>
-        
-        <!-- اختيار العهد -->
-        <div id="testament-selector" style="margin-top: 10px;">
-          <button class="action-btn" onclick="showTestament('old')">العهد القديم (39 سفر)</button>
-          <button class="action-btn" style="background:#2b4c7e;" onclick="showTestament('new')">العهد الجديد (27 سفر)</button>
-        </div>
-
-        <!-- قائمة الأسفار المختارة -->
-        <div id="books-list-view" style="display: none; margin-top: 15px;">
-          <button class="sub-btn" style="width: 100%; margin-bottom: 10px;" onclick="backToTestaments()">← تغيير العهد</button>
-          <h4 id="testament-title" style="color: #1a365d;"></h4>
-          <div class="grid-btns" id="books-grid"></div>
-        </div>
-
-        <!-- القارئ التفاعلي -->
-        <div id="bible-reader-view" style="display: none; margin-top: 15px;">
-          <button class="sub-btn" style="width: 100%; margin-bottom: 10px;" onclick="backToBooksList()">← العودة للأسفار</button>
-          <iframe class="reader-frame" id="bible-iframe" src=""></iframe>
-        </div>
-      </div>
-    </div>
-
-    <!-- 6. الأجبية كاملة -->
-    <div id="agpeya-view" class="app-screen" style="display: none;">
-      <div class="glass-card">
-        <h3 style="color: #1a365d; margin-bottom: 10px;">صلوات الأجبية كاملة</h3>
-        <iframe class="reader-frame" src="https://st-takla.org/Agpeya_.html"></iframe>
+        <h3 style="color: #0d3b66; margin-bottom: 12px;">الأجبية وصلوات اليوم - القطمارس</h3>
+        <iframe class="reader-frame" src="https://katamars.app/"></iframe>
       </div>
     </div>
 
@@ -261,9 +208,6 @@
     { id: 5, servant: "أ. بيتر خادم", members: [] }
   ];
 
-  let oldTestamentBooks = ["التكوين", "الخروج", "اللاويين", "العدد", "التثنية", "يشوع", "القضاة", "راعوث", "صموئيل الأول", "المزامير", "إشعياء"];
-  let newTestamentBooks = ["إنجيل متى", "إنجيل مرقس", "إنجيل لوقا", "إنجيل يوحنا", "أعمال الرسل", "رومية", "كورنثوس الأولى", "أفسس", "رؤيا يوحنا"];
-
   let activeUser = null;
 
   function toggleMenu() {
@@ -276,18 +220,11 @@
     const userClass = document.getElementById('reg-class').value;
 
     if (!name || phone.length !== 11) {
-      alert("برجاء إدخال اسمك الكامل ورقم تليفون صحيح 11 رقم");
+      alert("برجاء إدخال الاسم ورقم تليفون صحيح مكون من 11 رقم");
       return;
     }
 
-    activeUser = { 
-      id: "HERO-" + Math.floor(1000 + Math.random() * 9000),
-      name, phone, userClass, roomId: null 
-    };
-
-    // إظهار زر القائمة بعد التسجيل
-    document.getElementById('menu-btn').style.display = 'block';
-    
+    activeUser = { name, phone, userClass, roomId: null };
     document.getElementById('auth-screen').style.display = 'none';
     renderRooms();
     document.getElementById('room-select-screen').style.display = 'block';
@@ -299,19 +236,19 @@
     roomsData.forEach(room => {
       const isFull = room.members.length >= 4;
       container.innerHTML += `
-        <div style="background:rgba(255,255,255,0.5); border-radius:16px; padding:12px; margin-top:10px; border:1px solid rgba(255,255,255,0.7);">
-          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#1a365d;">
+        <div class="room-card">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#0d3b66;">
             <span>أوضة رقم ${room.id}</span>
             <span>(${room.members.length} / 4)</span>
           </div>
-          <div style="margin-top:6px; font-size:13px; color:#2d3748;">
+          <div style="margin-top:8px; font-size:14px;">
             <strong>الخادم المسؤول:</strong> ${room.servant}<br>
-            <strong>الموجودين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'خالية'}
+            <strong>المخدومين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'خالية'}
           </div>
           <button class="action-btn" style="margin-top:8px;" 
             ${isFull ? 'disabled style="background:#ccc;"' : ''} 
             onclick="selectRoom(${room.id})">
-            ${isFull ? 'الأوضة مكتملة' : 'حفظ واختيار هذه الأوضة'}
+            ${isFull ? 'مكتملة' : 'حفظ واختيار الأوضة'}
           </button>
         </div>
       `;
@@ -323,20 +260,9 @@
     if (room && room.members.length < 4) {
       room.members.push(activeUser.name);
       activeUser.roomId = roomId;
-
       document.getElementById('room-select-screen').style.display = 'none';
       document.getElementById('user-display-name').innerText = activeUser.name;
       document.getElementById('user-display-class').innerText = activeUser.userClass;
-      
-      // إنشاء QR Code للمخدوم
-      document.getElementById('qrcode').innerHTML = "";
-      new QRCode(document.getElementById("qrcode"), {
-        text: JSON.stringify({ id: activeUser.id, name: activeUser.name }),
-        width: 160,
-        height: 160
-      });
-      document.getElementById('card-user-id').innerText = `الكود الرقمي: ${activeUser.id}`;
-
       updateMyRoomUI();
       document.getElementById('main-view').style.display = 'block';
     }
@@ -345,46 +271,16 @@
   function updateMyRoomUI() {
     const room = roomsData.find(r => r.id === activeUser.roomId);
     document.getElementById('my-room-details').innerHTML = `
-      <p><strong>رقم الغرفة:</strong> ${room.id}</p>
-      <p><strong>الخادم المسؤول:</strong> ${room.servant}</p>
-      <p><strong>زملاء الغرفة:</strong> ${room.members.join(', ')}</p>
+      <p><strong>أوضة رقم:</strong> ${room.id}</p>
+      <p><strong>الخادم:</strong> ${room.servant}</p>
+      <p><strong>المتواجدون معك:</strong> ${room.members.join(', ')}</p>
     `;
   }
 
-  /* برمجية تصفح العهدين */
-  function showTestament(type) {
-    document.getElementById('testament-selector').style.display = 'none';
-    document.getElementById('books-list-view').style.display = 'block';
-    
-    const grid = document.getElementById('books-grid');
-    grid.innerHTML = '';
-
-    const books = type === 'old' ? oldTestamentBooks : newTestamentBooks;
-    document.getElementById('testament-title').innerText = type === 'old' ? 'أسفار العهد القديم' : 'أسفار العهد الجديد';
-
-    books.forEach(b => {
-      grid.innerHTML += `<div class="sub-btn" onclick="openBibleReader()">${b}</div>`;
-    });
-  }
-
-  function backToTestaments() {
-    document.getElementById('books-list-view').style.display = 'none';
-    document.getElementById('testament-selector').style.display = 'block';
-  }
-
-  function openBibleReader() {
-    document.getElementById('books-list-view').style.display = 'none';
-    document.getElementById('bible-reader-view').style.display = 'block';
-    document.getElementById('bible-iframe').src = "https://st-takla.org/pub_Deut/Deut_Read-Holy-Bible_.html";
-  }
-
-  function backToBooksList() {
-    document.getElementById('bible-reader-view').style.display = 'none';
-    document.getElementById('books-list-view').style.display = 'block';
-  }
-
   function navigate(screenId) {
-    toggleMenu();
+    if (document.getElementById('drawer').classList.contains('open')) {
+      toggleMenu();
+    }
     document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
     document.getElementById(screenId).style.display = 'block';
   }
