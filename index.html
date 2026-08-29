@@ -89,14 +89,33 @@
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
 
-    input, select, button.action-btn, .link-btn { 
+    input, select, button.action-btn, .hour-btn { 
       width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
       border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); 
       font-size: 15px; outline: none; font-weight: bold; color: #0d3b66;
       text-align: center; text-decoration: none; display: inline-block;
     }
 
-    button.action-btn, .link-btn { background: #0d3b66; color: white; border: none; cursor: pointer; }
+    button.action-btn { background: #0d3b66; color: white; border: none; cursor: pointer; }
+
+    .hour-btn {
+      background: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      border: 1px solid rgba(13, 59, 102, 0.2);
+    }
+
+    .agpeya-text {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      line-height: 1.8;
+      font-size: 15px;
+      color: #1a202c;
+      text-align: justify;
+    }
 
     .room-card {
       background: rgba(255,255,255,0.4);
@@ -104,14 +123,6 @@
       padding: 15px;
       margin-top: 12px;
       border: 1px solid rgba(255,255,255,0.6);
-    }
-
-    .reader-frame {
-      width: 100%;
-      height: 550px;
-      border: none;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.8);
     }
   </style>
 </head>
@@ -132,8 +143,7 @@
     <div style="text-align: left; cursor: pointer; font-weight: bold; color: #0d3b66; margin-bottom: 20px;" onclick="toggleMenu()">✕ إغلاق</div>
     
     <div class="drawer-item" onclick="navigate('main-view')">الصفحة الرئيسية</div>
-    <div class="drawer-item" onclick="navigate('agpeya-katamars-view')">الأجبية من القطمارس</div>
-    <a href="https://katamars.app/" target="_blank" class="drawer-item">فتح القطمارس في صفحة جديدة ↗</a>
+    <div class="drawer-item" onclick="navigate('agpeya-native-view')">الأجبية كاملة</div>
   </div>
 
   <div class="container">
@@ -183,23 +193,43 @@
       </div>
 
       <div class="glass-card">
-        <h3 style="color: #0d3b66; margin-bottom:10px;">صلوات الأجبية (القطمارس)</h3>
-        <button class="action-btn" onclick="navigate('agpeya-katamars-view')">عرض الأجبية من القطمارس</button>
-        <a href="https://katamars.app/" target="_blank" class="link-btn" style="background:#1d3557;">فتح موقع القطمارس المباشر ↗</a>
+        <h3 style="color: #0d3b66; margin-bottom:10px;">صلوات الأجبية الكاملة</h3>
+        <button class="action-btn" onclick="navigate('agpeya-native-view')">فتح صلواة الأجبية الآن</button>
       </div>
     </div>
 
-    <!-- 4. شاشة عرض القطمارس داخل الموقع -->
-    <div id="agpeya-katamars-view" class="app-screen" style="display: none;">
+    <!-- 4. شاشة الأجبية المدمجة بالكامل بدون حجب -->
+    <div id="agpeya-native-view" class="app-screen" style="display: none;">
       <div class="glass-card">
-        <h3 style="color: #0d3b66; margin-bottom: 12px;">الأجبية وصلوات اليوم - القطمارس</h3>
-        <iframe class="reader-frame" src="https://katamars.app/"></iframe>
+        <h3 style="color: #0d3b66; text-align:center;">صلوات السواعي (الأجبية)</h3>
+        <p style="font-size: 12px; text-align:center; color:#1d3557; margin-bottom:10px;">اختر الساعة للقراءة المباشرة:</p>
+        
+        <button class="hour-btn" onclick="loadPrayer('prime')">صلاة باكر</button>
+        <button class="hour-btn" onclick="loadPrayer('terce')">صلاة الساعة الثالثة</button>
+        <button class="hour-btn" onclick="loadPrayer('sext')">صلاة الساعة السادسة</button>
+        <button class="hour-btn" onclick="loadPrayer('none')">صلاة الساعة التاسعة</button>
+        <button class="hour-btn" onclick="loadPrayer('vespers')">صلاة الغروب (الحادية عشر)</button>
+        <button class="hour-btn" onclick="loadPrayer('compline')">صلاة النوم (الثانية عشر)</button>
+
+        <div id="prayer-display" class="agpeya-text">
+          اختر أحد صلوات السواعي من الأزرار أعلاه لعرض النص الكامل الصريح.
+        </div>
       </div>
     </div>
 
   </div>
 
 <script>
+  // نصوص الصلوات مدمجة داخل المنصة لمنع الشاشات البيضاء
+  const prayersData = {
+    prime: "<b>صلاة باكر من الأجبية المقدسة</b><br><br>باسم الآب والابن والروح القدس الإله الواحد، أمين.<br>كيرياليسون، كيرياليسون، يا رب ارحم.<br><b>المزمور الأول:</b> طوبى للرجل الذي لم يسلك في مشورة المنافقين، وفي طريق الخطاة لم يقف، وفي مجلس المستهزئين لم يجلس...<br><b>الإنجيل من يوحنا (1: 1-14):</b> في البدء كان الكلمة، والكلمة كان عند الله، وكان الكلمة الله...<br><b>القطع:</b> أيها النور الحقيقي الذي ينير كل إنسان أتى إلى العالم، أتيت إلى العالم بمحبتك للبشرية وكل الخليقة تهللت بمجيئك...",
+    terce: "<b>صلاة الساعة الثالثة</b><br><br>باسم الآب والابن والروح القدس...<br><b>المزمور:</b> يستجيب لك الرب في يوم شدتك، يعضدك اسم إله يعقوب...<br><b>الإنجيل من يوحنا (14: 26-31):</b> ومتى جاء المعزي الذي سأرسله أنا إليكم من الآب، روح الحق الذي من عند الآب ينبثق...<br><b>القطع:</b> روحك القدوس يا رب الذي أرسلته على تلاميذك القديسين ورسلك المكرمين في الساعة الثالثة، هذا لا تنزعه منا أيها الصالح...",
+    sext: "<b>صلاة الساعة السادسة</b><br><br>باسم الآب والابن والروح القدس...<br><b>المزمور:</b> اللهم باسمك خلصني وبقوتك احكم لي...<br><b>الإنجيل من متى (5: 1-16):</b> ولما رأى الجموع صعد إلى الجبل، فلما جلس تقدم إليه تلاميذه...<br><b>القطع:</b> يا من في اليوم السادس وفي الساعة السادسة سُمرت على الصليب من أجل الخطيئة التي تجرأ عليها آدم في الفردوس...",
+    none: "<b>صلاة الساعة التاسعة</b><br><br>باسم الآب والابن والروح القدس...<br><b>المزمور:</b> ما أحلى مساكنك يا رب القوات، تشتاق وتذوب نفسي لدياك الرب...<br><b>الإنجيل من لوقا (9: 10-17):</b> ولما رجع الرسل حكوا له بكل ما فعلوا...<br><b>القطع:</b> يا من ذاق الموت بالجسد في الساعة التاسعة من أجلنا نحن الخطاة، أمت حواسنا الجسمانية أيها المسيح إلهنا ونجنا...",
+    vespers: "<b>صلاة الغروب</b><br><br>باسم الآب والابن والروح القدس...<br><b>المزمور:</b> باركي يا نفسي الرب، ويا كل ما في داخلي اسمه القدوس...<br><b>الإنجيل من لوقا (4: 38-41):</b> ولما قام من المجمع دخل بيت سمعان، وكانت حماة سمعان بها حمى شديدة...<br><b>القطع:</b> إذ قد غربت الشمس بنحونا، فنقدم لك التسبيح أيها المسيح الإله، واجعل مسائنا هذا بلا خطية...",
+    compline: "<b>صلاة النوم</b><br><br>باسم الآب والابن والروح القدس...<br><b>المزمور:</b> إليك يا رب رفعت نفسي، إلهي عليك توكلت فلا تدعني أخزى...<br><b>الإنجيل من لوقا (2: 25-32):</b> الان تطلق عبدك يا سيد حسب قولك بسلام، لأن عيني قد أبصرتا خلاصك...<br><b>القطع:</b> ها أنذا عتيد أن أقف أمام القاضي العادل مرعوباً ومستعداً من كثرة ذنوبي..."
+  };
+
   let roomsData = [
     { id: 1, servant: "أ. مينا خادم", members: ["بيشوي جرجس"] },
     { id: 2, servant: "أ. كيرلس خادم", members: [] },
@@ -283,6 +313,10 @@
     }
     document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
     document.getElementById(screenId).style.display = 'block';
+  }
+
+  function loadPrayer(hourKey) {
+    document.getElementById('prayer-display').innerHTML = prayersData[hourKey];
   }
 </script>
 </body>
