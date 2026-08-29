@@ -1,409 +1,428 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة أبطال الإيمان 2026</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    :root {
-      --bg-color: #f1f5f9;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --text-color: #0f172a;
-      --subtext-color: #475569;
-      --border-color: #cbd5e1;
-      --primary: #2563eb;
-      --accent: #d97706;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام غرف المؤتمر</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0b0c2e; min-height: 100vh; display: flex; justify-content: center; padding: 30px; color: #fff; }
+        .app { max-width: 900px; width: 100%; }
+        .card { background: rgba(255,255,255,0.07); backdrop-filter: blur(12px); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        h2 { margin-bottom: 20px; font-weight: 300; color: #c4b5fd; border-right: 4px solid #a78bfa; padding-right: 15px; }
+        .flex-row { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .flex-row input, .flex-row select { flex: 1; min-width: 150px; }
+        input, select, button { padding: 14px 18px; border: none; border-radius: 60px; background: rgba(255,255,255,0.06); color: #fff; font-size: 15px; outline: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        input:focus, select:focus { outline: 2px solid #a78bfa; background: rgba(255,255,255,0.12); }
+        button { background: linear-gradient(135deg, #7c3aed, #a78bfa); font-weight: bold; cursor: pointer; }
+        button:hover { transform: scale(1.02); box-shadow: 0 8px 25px #7c3aed80; }
+        .btn-danger { background: #ef4444; }
+        .btn-outline { background: transparent; border: 1px solid #a78bfa; }
+        .hidden { display: none !important; }
 
-    [data-theme="dark"] {
-      --bg-color: #0f172a;
-      --card-bg: rgba(30, 41, 59, 0.85);
-      --text-color: #f8fafc;
-      --subtext-color: #94a3b8;
-      --border-color: #334155;
-      --primary: #38bdf8;
-      --accent: #fbbf24;
-    }
+        /* Avatar & User Row */
+        .user-row { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 60px; margin-bottom: 10px; border-right: 3px solid #a78bfa; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #a78bfa); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #fff; flex-shrink: 0; }
+        .user-info { flex: 1; }
+        .user-info .name { font-weight: bold; font-size: 18px; }
+        .user-info .sub { font-size: 13px; color: #9ca3af; }
+        .badge-role { padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: bold; }
+        .badge-server { background: #f59e0b; color: #1e1b2e; }
+        .badge-client { background: #34d399; color: #1e1b2e; }
+        .points-control { display: flex; gap: 8px; align-items: center; }
+        .points-control button { width: 40px; height: 40px; padding: 0; border-radius: 50%; font-size: 20px; background: #374151; }
+        .points-control button.plus { background: #22c55e; }
+        .points-control button.minus { background: #ef4444; }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; transition: background 0.3s, color 0.3s; }
-    
-    body { 
-      background: var(--bg-color);
-      color: var(--text-color); 
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 10px;
-    }
+        /* Rooms Grid */
+        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .room-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .room-card .num { font-size: 28px; font-weight: bold; color: #a78bfa; }
+        .room-card .count { font-size: 14px; color: #9ca3af; }
 
-    .mobile-screen {
-      width: 100%;
-      max-width: 420px;
-      background: var(--bg-color);
-      border-radius: 28px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      border: 1px solid var(--border-color);
-      position: relative;
-      min-height: 90vh;
-      display: flex;
-      flex-direction: column;
-    }
+        /* Stats table */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .stat-item { background: rgba(255,255,255,0.04); padding: 15px; border-radius: 16px; text-align: center; }
+        .stat-item .val { font-size: 28px; font-weight: bold; color: #fcd34d; }
+        .stat-item .lbl { font-size: 13px; color: #9ca3af; }
 
-    /* خلفية صورة المسيح والصليب الشفافة */
-    .bg-watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      opacity: 0.08;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .top-bar {
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-color);
-      position: relative;
-      z-index: 2;
-    }
-
-    .brand-title { font-size: 18px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 6px; }
-
-    .app-body { padding: 15px; flex: 1; overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 1; }
-
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-color);
-    }
-
-    .theme-btn, .signout-btn {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .signout-btn { background: #ef4444; color: white; border: none; }
-
-    .role-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: #2563eb;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .role-btn.servant { background: #d97706; }
-
-    /* XP Card */
-    .xp-card {
-      text-align: center;
-      position: relative;
-      border: 1px solid var(--primary);
-    }
-    .level-badge {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: var(--accent);
-      color: #fff;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    .xp-number { font-size: 28px; font-weight: 800; color: var(--accent); margin: 5px 0; }
-
-    /* QR Code Card */
-    .qr-card {
-      background: #ffffff;
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    /* Instructions Section */
-    .instruction-item {
-      font-size: 13px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      color: var(--subtext-color);
-    }
-
-    /* Logs */
-    .log-item {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-    .log-points { color: #22c55e; font-weight: bold; }
-
-    /* Servant Table */
-    .student-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    .student-table th, .student-table td {
-      padding: 8px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-    }
-    .action-point-btn {
-      padding: 2px 8px;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      color: white;
-    }
-    .btn-add { background: #22c55e; }
-    .btn-sub { background: #ef4444; }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: var(--card-bg);
-      color: var(--text-color);
-      outline: none;
-    }
-  </style>
+        .alert-box { background: #f43f5e; padding: 12px; border-radius: 30px; margin: 10px 0; text-align: center; animation: fade 0.5s; }
+        @keyframes fade { from { opacity:0; transform:translateY(-10px); } to { opacity:1; } }
+        .small-text { font-size: 13px; color: #9ca3af; }
+        hr { margin: 20px 0; border-color: rgba(255,255,255,0.05); }
+    </style>
 </head>
 <body>
+<div class="app" id="app">
 
-<div class="mobile-screen">
-
-  <!-- صورة المسيح والصليب خلفية تفاعلية -->
-  <img class="bg-watermark" src="https://upload.wikimedia.org/wikipedia/commons/4/43/Christ_Pantocrator_Deesis_Mosaic_Hagia_Sophia.jpg" alt="Christ">
-
-  <!-- Header -->
-  <div class="top-bar">
-    <div class="brand-title">┼ أبطال الإيمان</div>
-    <div style="display: flex; gap: 6px;">
-      <button class="theme-btn" onclick="toggleTheme()">☀️/🌙</button>
-      <button id="signout-btn-ui" class="signout-btn" style="display: none;" onclick="signOut()">Sign Out</button>
-    </div>
-  </div>
-
-  <div class="app-body">
-
-    <!-- 1. شاشة تسجيل الدخول (Sign In) -->
-    <div id="auth-screen">
-      <h3 style="text-align: center; margin-bottom: 15px;">تسجيل الدخول (Sign In)</h3>
-      <label style="font-size: 13px;">نوع الحساب:</label>
-      <select id="user-type" onchange="toggleAuthFields()">
-        <option value="student">مخدوم / طالب</option>
-        <option value="servant">خادم</option>
-      </select>
-
-      <div id="student-fields">
-        <label style="font-size: 13px; margin-top: 10px; display: block;">الاسم بالكامل:</label>
-        <input type="text" id="auth-name" placeholder="أدخل اسمك الثلاثي">
-        <label style="font-size: 13px; margin-top: 10px; display: block;">الغرفة:</label>
-        <select id="auth-room">
-          <option value="غرفة مارمرقس">غرفة مارمرقس</option>
-          <option value="غرفة الأنبا ونس">غرفة الأنبا ونس</option>
-          <option value="غرفة البابا كيرلس">غرفة البابا كيرلس</option>
-        </select>
-      </div>
-
-      <button class="role-btn" onclick="signIn()">دخول (Sign In)</button>
-    </div>
-
-    <!-- 2. واجهة المخدوم -->
-    <div id="student-dashboard" style="display: none;">
-
-      <!-- تعليمات المخدوم -->
-      <div class="card">
-        <div style="font-weight: bold; margin-bottom: 8px; color: var(--primary);">📋 تعليمات وإرشادات المخدوم</div>
-        <div class="instruction-item">1. الالتزام بمواعيد الصلوات والتجمعات الخاصة بالمؤتمر.</div>
-        <div class="instruction-item">2. يرجى إظهار الـ QR Code للخادم عند تسجيل الحضور للحصول على النقاط.</div>
-        <div class="instruction-item">3. الحفاظ على الهدوء والمشاركة الفعالة في الأنشطة والتحديات.</div>
-      </div>
-      
-      <!-- كارت نقاط الـ XP والمستوى -->
-      <div class="card xp-card">
-        <div class="level-badge">مستوى <span id="st-level">1</span></div>
-        <div style="font-size: 12px; color: var(--subtext-color);">مجموع النقاط الحالية</div>
-        <div class="xp-number" id="st-xp">1 XP</div>
-      </div>
-
-      <!-- كارت الـ QR Code -->
-      <div class="card qr-card">
-        <div>
-          <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">كود الحضور (QR)</div>
-          <div style="font-size: 12px; color: #64748b;" id="st-code-txt">CODE-123</div>
+    <!-- ========== صفحة تسجيل الدخول ========== -->
+    <div id="loginPage" class="card">
+        <h2>🔐 دخول المؤتمر</h2>
+        <div class="flex-row">
+            <select id="roleSelect">
+                <option value="server">🧑‍💼 خادم (مشرف غرفة)</option>
+                <option value="client">🧑‍🎓 مخدوم (حاجز)</option>
+            </select>
+            <input type="text" id="fullName" placeholder="الاسم الثلاثي (مثال: أحمد محمد علي)" />
+            <input type="tel" id="userPhone" placeholder="رقم التليفون" />
         </div>
-        <div id="qrcode"></div>
-      </div>
-
-      <!-- كارت سجل النقاط -->
-      <div class="card">
-        <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px;">سجل النقاط</div>
-        <div id="logs-container">
-          <div class="log-item">
-            <span>🎁 مكافأة تسجيل الدخول اليومي (Sign In)</span>
-            <span class="log-points">+1 XP</span>
-          </div>
+        <div class="flex-row">
+            <input type="number" id="roomNumber" placeholder="رقم الغرفة (1-5)" min="1" max="5" />
+            <button onclick="signIn()">دخول / تسجيل</button>
         </div>
-      </div>
-
+        <p id="loginError" class="small-text" style="color:#f87171;"></p>
     </div>
 
-    <!-- 3. واجهة الخادم -->
-    <div id="servant-dashboard" style="display: none;">
-      <h3 style="margin-bottom: 15px; color: var(--accent);">لوحة تحكم الخادم</h3>
+    <!-- ========== صفحة الخادم ========== -->
+    <div id="serverPage" class="hidden">
+        <div class="card">
+            <div class="flex-row" style="justify-content:space-between;">
+                <div class="user-row" style="background:transparent; padding:0; border:0;">
+                    <div class="avatar" id="serverAvatar">خ</div>
+                    <div><div class="name" id="serverName">---</div><div class="sub">🛡️ خادم الغرفة <span id="serverRoomNum">0</span></div></div>
+                </div>
+                <button onclick="logout()" class="btn-danger" style="padding:8px 20px;">🚪 خروج</button>
+            </div>
+        </div>
 
-      <!-- جدول المخدومين وإدارة النقاط -->
-      <div class="card">
-        <div style="font-weight: bold; margin-bottom: 8px;">قائمة المخدومين والتحكم بالنقاط</div>
-        <table class="student-table">
-          <thead>
-            <tr>
-              <th>الاسم</th>
-              <th>النقاط</th>
-              <th>التحكم</th>
-            </tr>
-          </thead>
-          <tbody id="servant-students-list">
-            <!-- سيتم إضافة المخدومين هنا -->
-          </tbody>
-        </table>
-      </div>
+        <!-- لوحة الغرف -->
+        <div class="card">
+            <h2>🏠 الغرف المتاحة</h2>
+            <div class="rooms-grid" id="roomsContainer"></div>
+        </div>
+
+        <!-- قائمة المخدومين في غرفتي -->
+        <div class="card">
+            <h2>👥 مخدومي غرفتي (العدد: <span id="clientCount">0</span>)</h2>
+            <div id="clientsList"></div>
+        </div>
+
+        <!-- إحصائيات -->
+        <div class="card">
+            <h2>📊 إحصائيات النقاط</h2>
+            <div class="stats-grid" id="statsContainer">
+                <div class="stat-item"><div class="val" id="statTotal">0</div><div class="lbl">إجمالي النقاط</div></div>
+                <div class="stat-item"><div class="val" id="statAvg">0</div><div class="lbl">المتوسط</div></div>
+                <div class="stat-item"><div class="val" id="statMax">0</div><div class="lbl">أعلى نقطة</div></div>
+            </div>
+            <div style="margin-top:10px; font-size:14px; color:#9ca3af;" id="statPercentage">نسبة التقدم: 0%</div>
+        </div>
     </div>
 
-  </div>
+    <!-- ========== صفحة المخدوم ========== -->
+    <div id="clientPage" class="hidden">
+        <div class="card">
+            <div class="flex-row" style="justify-content:space-between;">
+                <div class="user-row" style="background:transparent; padding:0; border:0;">
+                    <div class="avatar" id="clientAvatar">م</div>
+                    <div><div class="name" id="clientName">---</div><div class="sub">🚪 غرفة <span id="clientRoomNum">0</span> • ⭐ نقاط: <strong id="clientPoints">0</strong></div></div>
+                </div>
+                <button onclick="logout()" class="btn-danger" style="padding:8px 20px;">🚪 خروج</button>
+            </div>
+            <div id="clientNotification" class="hidden alert-box">🔔 لديك إشعار جديد!</div>
+            <div id="clientHistory" style="margin-top:15px; background:rgba(255,255,255,0.03); padding:15px; border-radius:20px;">
+                <span class="small-text">📝 آخر تحديث: <span id="lastUpdateBy">لا يوجد</span></span>
+            </div>
+        </div>
+        <!-- عرض بسيط للغرفة التي فيها -->
+        <div class="card">
+            <h2>👥 أعضاء غرفتي</h2>
+            <div id="clientRoomMembers"></div>
+        </div>
+    </div>
 
 </div>
 
 <script>
-  // قاعدة بيانات مؤقتة للمخدومين
-  let studentsData = [
-    { id: 1, name: "بيشوي جرجس", room: "غرفة مارمرقس", xp: 12, code: "ST-8901" },
-    { id: 2, name: "مينا يوسف", room: "غرفة الأنبا ونس", xp: 8, code: "ST-8902" },
-    { id: 3, name: "كيرلس عماد", room: "غرفة البابا كيرلس", xp: 15, code: "ST-8903" }
-  ];
+    // ===== إعدادات Firebase (ضع بيانات مشروعك هنا) =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyDemoKey_123456789",
+        authDomain: "your-project.firebaseapp.com",
+        projectId: "your-project",
+        storageBucket: "your-project.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  let currentSession = null;
+    // ===== متغيرات عامة =====
+    let currentUser = null; // { uid, name, phone, role, roomNumber, points }
 
-  function toggleTheme() {
-    const body = document.documentElement;
-    if (body.getAttribute('data-theme') === 'dark') {
-      body.removeAttribute('data-theme');
-    } else {
-      body.setAttribute('data-theme', 'dark');
-    }
-  }
-
-  function toggleAuthFields() {
-    const type = document.getElementById('user-type').value;
-    document.getElementById('student-fields').style.display = type === 'student' ? 'block' : 'none';
-  }
-
-  function signIn() {
-    const type = document.getElementById('user-type').value;
-    const name = document.getElementById('auth-name').value;
-    const room = document.getElementById('auth-room').value;
-
-    if (type === 'student' && !name) {
-      alert("برجاء إدخال اسم المخدوم");
-      return;
+    // ===== دوال مساعدة =====
+    function getAvatarChar(name) {
+        if (!name) return '👤';
+        const parts = name.trim().split(' ');
+        if (parts.length >= 3) return parts[0][0] + parts[1][0];
+        return name[0] || '👤';
     }
 
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('signout-btn-ui').style.display = 'block';
+    // ===== تسجيل الدخول =====
+    window.signIn = async function() {
+        const name = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('userPhone').value.trim();
+        const role = document.getElementById('roleSelect').value;
+        const room = parseInt(document.getElementById('roomNumber').value);
+        const err = document.getElementById('loginError');
 
-    if (type === 'student') {
-      // البحث عن المخدوم أو إضافته
-      let student = studentsData.find(s => s.name === name);
-      if (!student) {
-        student = { id: Date.now(), name: name, room: room, xp: 1, code: "ST-" + Math.floor(1000 + Math.random() * 9000) };
-        studentsData.push(student);
-      } else {
-        student.xp += 1; // إعطاء نقطة مكافأة التسجيل
-      }
+        if (!name || !phone || !room) { err.innerText = '❗ املأ جميع الحقول'; return; }
+        if (room < 1 || room > 5) { err.innerText = '❗ رقم الغرفة من 1 إلى 5'; return; }
 
-      currentSession = student;
-      document.getElementById('st-xp').innerText = student.xp + " XP";
-      document.getElementById('st-code-txt').innerText = student.code;
+        try {
+            const cred = await auth.signInAnonymously();
+            const uid = cred.user.uid;
 
-      // إنشاء الـ QR Code
-      document.getElementById("qrcode").innerHTML = "";
-      new QRCode(document.getElementById("qrcode"), { text: student.code, width: 60, height: 60 });
+            const userRef = db.collection('users').doc(uid);
+            await userRef.set({ name, phone, role, roomNumber: room, points: 0 }, { merge: true });
 
-      document.getElementById('student-dashboard').style.display = 'block';
-    } else {
-      // دخول الخادم
-      renderServantTable();
-      document.getElementById('servant-dashboard').style.display = 'block';
+            // --- إدارة الغرف (Firestore) ---
+            const roomRef = db.collection('rooms').doc(String(room));
+            const roomDoc = await roomRef.get();
+            let members = [];
+            let serverId = null;
+
+            if (roomDoc.exists) {
+                const data = roomDoc.data();
+                members = data.members || [];
+                serverId = data.serverId || null;
+            }
+
+            if (role === 'server') {
+                // لو خادم: يشترط ألا يكون للغرفة خادم بالفعل
+                if (serverId && serverId !== uid) {
+                    err.innerText = '❌ هذه الغرفة لها خادم بالفعل! اختر غرفة أخرى.';
+                    return;
+                }
+                await roomRef.set({ serverId: uid, members: members }, { merge: true });
+            } else { // client
+                if (members.length >= 5) {
+                    err.innerText = '❌ الغرفة ممتلئة (5 أشخاص)! اختر غرفة أخرى.';
+                    return;
+                }
+                if (!members.includes(uid)) members.push(uid);
+                await roomRef.set({ serverId: serverId, members: members }, { merge: true });
+            }
+
+            // جلب البيانات المحدثة
+            const doc = await userRef.get();
+            currentUser = { uid, ...doc.data() };
+            err.innerText = '';
+
+            if (role === 'server') showServerPage();
+            else showClientPage();
+
+        } catch (e) {
+            err.innerText = '❌ خطأ: ' + e.message;
+        }
+    };
+
+    // ===== عرض صفحات =====
+    function showServerPage() {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('serverPage').classList.remove('hidden');
+        document.getElementById('clientPage').classList.add('hidden');
+
+        document.getElementById('serverName').innerText = currentUser.name;
+        document.getElementById('serverAvatar').innerText = getAvatarChar(currentUser.name);
+        document.getElementById('serverRoomNum').innerText = currentUser.roomNumber;
+
+        loadRooms();
+        loadClients();
+        loadStats();
     }
-  }
 
-  function signOut() {
-    currentSession = null;
-    document.getElementById('student-dashboard').style.display = 'none';
-    document.getElementById('servant-dashboard').style.display = 'none';
-    document.getElementById('signout-btn-ui').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'block';
-  }
+    function showClientPage() {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('clientPage').classList.remove('hidden');
+        document.getElementById('serverPage').classList.add('hidden');
 
-  function renderServantTable() {
-    const tbody = document.getElementById('servant-students-list');
-    tbody.innerHTML = '';
-    studentsData.forEach(s => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${s.name}<br><small style="color:var(--subtext-color);">${s.room}</small></td>
-          <td id="xp-val-${s.id}"><b>${s.xp}</b></td>
-          <td>
-            <button class="action-point-btn btn-add" onclick="updatePoints(${s.id}, 1)">+</button>
-            <button class="action-point-btn btn-sub" onclick="updatePoints(${s.id}, -1)">-</button>
-          </td>
-        </tr>
-      `;
+        document.getElementById('clientName').innerText = currentUser.name;
+        document.getElementById('clientAvatar').innerText = getAvatarChar(currentUser.name);
+        document.getElementById('clientRoomNum').innerText = currentUser.roomNumber;
+        document.getElementById('clientPoints').innerText = currentUser.points || 0;
+
+        // إشعار
+        document.getElementById('clientNotification').classList.remove('hidden');
+        setTimeout(() => document.getElementById('clientNotification').classList.add('hidden'), 5000);
+
+        loadClientRoomMembers();
+        loadClientHistory();
+    }
+
+    // ===== تحميل الغرف للخادم =====
+    async function loadRooms() {
+        const container = document.getElementById('roomsContainer');
+        container.innerHTML = 'جار التحميل...';
+        try {
+            const snap = await db.collection('rooms').get();
+            let html = '';
+            snap.forEach(doc => {
+                const data = doc.data();
+                const members = data.members || [];
+                const serverId = data.serverId || 'لا يوجد';
+                html += `<div class="room-card">
+                    <div class="num">🚪 ${doc.id}</div>
+                    <div>👥 ${members.length}/5</div>
+                    <div class="small-text">خادم: ${serverId === currentUser.uid ? 'أنت' : (serverId ? 'موجود' : 'متاح')}</div>
+                </div>`;
+            });
+            container.innerHTML = html || 'لا توجد غرف';
+        } catch (e) { container.innerHTML = 'خطأ في التحميل'; }
+    }
+
+    // ===== تحميل المخدومين في غرفة الخادم =====
+    async function loadClients() {
+        const list = document.getElementById('clientsList');
+        const countSpan = document.getElementById('clientCount');
+        try {
+            const roomDoc = await db.collection('rooms').doc(String(currentUser.roomNumber)).get();
+            const members = roomDoc.exists ? (roomDoc.data().members || []) : [];
+            countSpan.innerText = members.length;
+
+            if (members.length === 0) { list.innerHTML = '<div class="small-text">لا يوجد مخدومين بعد</div>'; return; }
+
+            let html = '';
+            for (const uid of members) {
+                const userSnap = await db.collection('users').doc(uid).get();
+                if (!userSnap.exists) continue;
+                const data = userSnap.data();
+                html += `
+                    <div class="user-row">
+                        <div class="avatar">${getAvatarChar(data.name)}</div>
+                        <div class="user-info">
+                            <div class="name">${data.name}</div>
+                            <div class="sub">📞 ${data.phone} • نقاط: ${data.points || 0}</div>
+                        </div>
+                        <div class="points-control">
+                            <button class="plus" onclick="updatePoint('${uid}', 1)">+</button>
+                            <button class="minus" onclick="updatePoint('${uid}', -1)">-</button>
+                        </div>
+                    </div>
+                `;
+            }
+            list.innerHTML = html;
+        } catch (e) { list.innerHTML = 'خطأ: ' + e.message; }
+    }
+
+    // ===== تحديث النقاط (خادم) =====
+    window.updatePoint = async function(clientUid, delta) {
+        if (!currentUser || currentUser.role !== 'server') return;
+        try {
+            const userRef = db.collection('users').doc(clientUid);
+            const doc = await userRef.get();
+            if (!doc.exists) return;
+            const currentPoints = doc.data().points || 0;
+            const newPoints = currentPoints + delta;
+            await userRef.update({ points: newPoints });
+
+            // تسجيل الإشعار (مين عمل التحديث)
+            await db.collection('notifications').add({
+                userId: clientUid,
+                message: `🔄 تم ${delta > 0 ? 'إضافة' : 'خصم'} ${Math.abs(delta)} نقطة بواسطة ${currentUser.name}`,
+                performer: currentUser.name,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                read: false
+            });
+
+            // تحديث واجهة الخادم (القائمة)
+            loadClients();
+            loadStats();
+            // لو المخدوم هو نفسه فتحت صفحته (نادر) هنحدثها لو هو
+            if (clientUid === currentUser.uid) {
+                currentUser.points = newPoints;
+                document.getElementById('clientPoints').innerText = newPoints;
+            }
+        } catch (e) { alert('خطأ: ' + e.message); }
+    };
+
+    // ===== الإحصائيات =====
+    async function loadStats() {
+        try {
+            const snap = await db.collection('users').where('role', '==', 'client').get();
+            let points = [];
+            snap.forEach(d => points.push(d.data().points || 0));
+            const total = points.reduce((a,b) => a+b, 0);
+            const avg = points.length ? (total / points.length).toFixed(1) : 0;
+            const max = points.length ? Math.max(...points) : 0;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statAvg').innerText = avg;
+            document.getElementById('statMax').innerText = max;
+
+            // نسبة (لو افترضنا أن الهدف 100 نقطة مثلاً)
+            const maxPossible = 100;
+            const pct = Math.min(100, ((total / (points.length || 1)) / maxPossible) * 100).toFixed(0);
+            document.getElementById('statPercentage').innerHTML = `📈 نسبة التقدم (متوسط النقاط إلى 100): ${pct}%`;
+        } catch (e) { console.error(e); }
+    }
+
+    // ===== للمخدوم: عرض أعضاء غرفته =====
+    async function loadClientRoomMembers() {
+        const container = document.getElementById('clientRoomMembers');
+        try {
+            const roomDoc = await db.collection('rooms').doc(String(currentUser.roomNumber)).get();
+            const members = roomDoc.exists ? (roomDoc.data().members || []) : [];
+            if (members.length === 0) { container.innerHTML = '<div class="small-text">لا يوجد أعضاء</div>'; return; }
+            let html = '';
+            for (const uid of members) {
+                const snap = await db.collection('users').doc(uid).get();
+                if (!snap.exists) continue;
+                const data = snap.data();
+                const isMe = uid === currentUser.uid;
+                html += `<div class="user-row" style="${isMe ? 'border-right-color: #fcd34d;' : ''}">
+                    <div class="avatar">${getAvatarChar(data.name)}</div>
+                    <div><div class="name">${data.name} ${isMe ? '⭐' : ''}</div>
+                    <div class="sub">نقاط: ${data.points || 0}</div></div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        } catch (e) { container.innerHTML = 'خطأ'; }
+    }
+
+    // ===== للمخدوم: تاريخ آخر تحديث =====
+    async function loadClientHistory() {
+        try {
+            const snap = await db.collection('notifications')
+                .where('userId', '==', currentUser.uid)
+                .orderBy('timestamp', 'desc')
+                .limit(1)
+                .get();
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                document.getElementById('lastUpdateBy').innerText = data.performer || 'مجهول';
+            } else {
+                document.getElementById('lastUpdateBy').innerText = 'لا يوجد تحديثات';
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // ===== خروج =====
+    window.logout = function() { auth.signOut(); location.reload(); };
+
+    // ===== استعادة الجلسة =====
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (doc.exists) {
+                currentUser = { uid: user.uid, ...doc.data() };
+                if (currentUser.role === 'server') showServerPage();
+                else showClientPage();
+            }
+        }
     });
-  }
 
-  function updatePoints(studentId, delta) {
-    const student = studentsData.find(s => s.id === studentId);
-    if (student) {
-      student.xp = Math.max(0, student.xp + delta);
-      document.getElementById(`xp-val-${student.id}`).innerHTML = `<b>${student.xp}</b>`;
-    }
-  }
+    // تحديث دوري (كل 5 ثواني) للخادم عشان يشوف التغييرات
+    setInterval(() => {
+        if (currentUser && currentUser.role === 'server') {
+            loadClients();
+            loadStats();
+            loadRooms();
+        }
+    }, 5000);
 </script>
-
 </body>
 </html>
