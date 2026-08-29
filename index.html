@@ -5,159 +5,184 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مؤتمر أبطال الإيمان 2026</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f0f2f5; margin: 0; padding: 15px; }
-    .container { max-width: 600px; margin: auto; }
-    .nav { display: flex; gap: 10px; margin-bottom: 20px; }
-    .nav button { flex: 1; padding: 12px; border: none; background: #2c3e50; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 16px; }
-    .nav button.active { background: #27ae60; }
-    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; }
-    .score-badge { font-size: 32px; color: #27ae60; text-align: center; font-weight: bold; margin: 10px 0; }
-    .day-selector { display: flex; gap: 5px; margin-bottom: 15px; }
-    .day-btn { flex: 1; padding: 8px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    .day-btn.active { background: #2980b9; color: white; }
-    .timeline-item { border-right: 4px solid #2980b9; padding-right: 12px; margin-bottom: 12px; background: #f9f9f9; padding: 10px; border-radius: 0 8px 8px 0; }
-    input, button.action-btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
-    button.action-btn { background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
-    label { font-weight: bold; margin-top: 10px; display: block; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    
+    /* خلفية متحركة بألوان روحية */
+    body { 
+      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1a2a6c);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff; 
+      padding: 15px; 
+      min-height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container { max-width: 650px; margin: auto; }
+
+    /* تأثير Glassmorphism (الزجاج الشفاف) */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .cross-header { text-align: center; font-size: 45px; color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+
+    /* أزرار التنقل بين الصفحات */
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .nav-btn { 
+      flex: 1; 
+      padding: 10px; 
+      border: none; 
+      background: rgba(255, 255, 255, 0.15); 
+      color: white; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    .nav-btn.active { background: #ffd700; color: #000; }
+
+    .score-badge { font-size: 36px; color: #4eef90; text-align: center; font-weight: bold; }
+    
+    input, select, button.action-btn { 
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; 
+      border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; 
+    }
+    button.action-btn { background: #ffd700; color: #000; font-weight: bold; cursor: pointer; border: none; }
+
+    .room-item, .user-item { 
+      background: rgba(255,255,255,0.08); 
+      padding: 10px; 
+      border-radius: 8px; 
+      margin-bottom: 8px; 
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- التبديل بين اللوحات -->
-  <div class="nav">
-    <button onclick="switchView('guest')" id="btn-guest" class="active">لوحة المخدوم</button>
-    <button onclick="switchView('host')" id="btn-host">لوحة الخادم</button>
+  <div class="glass-card">
+    <div class="cross-header">┼</div>
+    <h2 style="text-align: center;">مؤتمر أبطال الإيمان 2026</h2>
   </div>
 
-  <!-- واجهة المخدوم -->
-  <div id="guest-view">
-    <div class="card">
-      <h2 style="text-align: center; color: #2c3e50; margin: 0;">مؤتمر أبطال الإيمان 2026</h2>
-      <p style="text-align: center; color: #7f8c8d; margin-top: 5px;">بيت البستان</p>
-      <div class="score-badge">نقاطك: <span id="user-points">0</span></div>
+  <!-- نظام تسجيل الدخول المبسط -->
+  <div class="glass-card" id="auth-box">
+    <h3>تسجيل الدخول</h3>
+    <select id="user-role" onchange="toggleRoleInput()">
+      <option value="guest">مخدوم</option>
+      <option value="host">خادم</option>
+    </select>
+    <input type="text" id="username" placeholder="أدخل الاسم">
+    <button class="action-btn" onclick="login()">دخول</button>
+  </div>
+
+  <!-- الشاشة الرئيسية بعد الدخول -->
+  <div id="app-content" style="display: none;">
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="showTab('main-tab')">الرئيسية</button>
+      <button class="nav-btn" onclick="showTab('bible-tab')">الإنجيل</button>
+      <button class="nav-btn" onclick="showTab('agpeya-tab')">الأجبية</button>
+      <button class="nav-btn host-only" onclick="showTab('admin-tab')" style="display:none;">لوحة الخادم</button>
     </div>
 
-    <div class="card">
-      <h3>جدول الفعاليات</h3>
-      <div class="day-selector">
-        <button class="day-btn active" onclick="showDay(1)" id="day1-btn">اليوم الأول (3/9)</button>
-        <button class="day-btn" onclick="showDay(2)" id="day2-btn">اليوم الثاني (4/9)</button>
-        <button class="day-btn" onclick="showDay(3)" id="day3-btn">اليوم الثالث (5/9)</button>
+    <!-- تبويب الرئيسية للمخدوم والخادم -->
+    <div id="main-tab" class="tab-content">
+      <div class="glass-card">
+        <div class="score-badge">النقاط: <span id="my-points">0</span></div>
       </div>
-      <div id="schedule-list"></div>
+      <div class="glass-card">
+        <h3>تسكين الغرف الخاص بك</h3>
+        <p id="my-room-info">الغرفة رقم: 102 - مبنى أ</p>
+      </div>
     </div>
-  </div>
 
-  <!-- واجهة الخادم -->
-  <div id="host-view" style="display: none;">
-    <div class="card">
-      <h3>إضافة نقاط للمخدومين والتيمات</h3>
-      <label>اسم المخدوم / التيم:</label>
-      <input type="text" id="target-name" placeholder="أدخل الاسم">
-      
-      <label>عدد النقاط:</label>
-      <input type="number" id="target-points" placeholder="مثال: 50">
-      
-      <button class="action-btn" onclick="addPoints()">إضافة النقاط فوراً</button>
+    <!-- تبويب الكتاب المقدس -->
+    <div id="bible-tab" class="tab-content" style="display: none;">
+      <div class="glass-card">
+        <h3>الكتاب المقدس الكامل</h3>
+        <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">يمكن الاطلاع على الأسفار العهد القديم والجديد عبر المكتبة الرقمية المدمجة.</p>
+        <button class="action-btn" onclick="window.open('https://www.st-takla.org/pub_Deut/Deut_Read-Holy-Bible_.html', '_blank')">فتح الكتاب المقدس الكامل</button>
+      </div>
+    </div>
+
+    <!-- تبويب الأجبية -->
+    <div id="agpeya-tab" class="tab-content" style="display: none;">
+      <div class="glass-card">
+        <h3>صلوات الأجبية</h3>
+        <button class="action-btn" style="margin-bottom:5px;" onclick="window.open('https://st-takla.org/Agpeya_.html', '_blank')">صلوات السواعي كاملة</button>
+      </div>
+    </div>
+
+    <!-- تبويب لوحة الخادم الخاص بالخدام فقط -->
+    <div id="admin-tab" class="tab-content" style="display: none;">
+      <div class="glass-card">
+        <h3>إضافة نقاط (للمخدوم أو التيم)</h3>
+        <input type="text" id="target-user" placeholder="اسم المخدوم أو التيم">
+        <input type="number" id="points-to-add" placeholder="عدد النقاط">
+        <button class="action-btn" onclick="grantPoints()">إضافة النقاط</button>
+      </div>
+
+      <div class="glass-card">
+        <h3>قائمة الخدام وأرقام التليفونات</h3>
+        <div class="user-item">أ. مينا (خادم أول): 01200000000</div>
+        <div class="user-item">أ. كيرلس (مطبوعات): 01100000000</div>
+      </div>
+
+      <div class="glass-card">
+        <h3>توزيع تسكين الأوض الكامل</h3>
+        <div class="room-item">غرفة 101: مينا - بيشوي - جرجس</div>
+        <div class="room-item">غرفة 102: أنطون - أنطونيوس - داود</div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // جدول الفعاليات الكامل للمؤتمر
-  const scheduleData = {
-    1: [
-      { time: "07:00 - 09:00", title: "ساعتين في السماء" },
-      { time: "09:30 - 11:00", title: "تحرك" },
-      { time: "11:00 - 12:00", title: "فين اوضتي؟" },
-      { time: "12:00 - 01:00", title: "الـ..... الأول" },
-      { time: "01:00 - 03:00", title: "الدنيا حررر" },
-      { time: "03:00 - 04:00", title: "الأكل للجميع" },
-      { time: "04:00 - 05:30", title: "راحة" },
-      { time: "05:30 - 06:00", title: "ما أحلى ساعة الصلاة" },
-      { time: "06:00 - 07:00", title: "الـ..... الثانية" },
-      { time: "07:00 - 08:00", title: "هوس ايروف" },
-      { time: "08:00 - 09:30", title: "عشاء" },
-      { time: "09:30 - 10:30", title: "دور معايا" },
-      { time: "10:30 - 12:30", title: "مسابقة وتحديات" },
-      { time: "01:00", title: "تصبحوا على خير" }
-    ],
-    2: [
-      { time: "07:00 - 09:00", title: "ساعتين في السماء" },
-      { time: "09:00 - 10:00", title: "الـ..... الثالثة" },
-      { time: "10:00 - 11:00", title: "عالسفرة" },
-      { time: "11:00 - 12:00", title: "براحتك" },
-      { time: "01:00 - 03:00", title: "الدنيا حررر" },
-      { time: "03:00 - 04:00", title: "الأكل للجميع" },
-      { time: "04:00 - 05:30", title: "راحة" },
-      { time: "05:30 - 06:00", title: "ما أحلى ساعة الصلاة" },
-      { time: "06:00 - 07:00", title: "الـ..... الرابعة" },
-      { time: "07:00 - 08:00", title: "هوس ايروف" },
-      { time: "08:00 - 09:30", title: "عشاء" },
-      { time: "09:30 - 10:00", title: "فقرة مسابقات" },
-      { time: "10:00 - 02:00", title: "سهرة" },
-      { time: "02:00", title: "تصبحوا على خير" }
-    ],
-    3: [
-      { time: "07:00", title: "صباح الخير" },
-      { time: "07:00 - 08:00", title: "يالا نلم الشنط" },
-      { time: "08:00 - 09:00", title: "عالسفرة" },
-      { time: "09:00", title: "يالا عالدير" },
-      { time: "03:00", title: "يالا نمشي" },
-      { time: "06:00", title: "حمد الله ع السلامة" }
-    ]
-  };
+  let currentUser = { name: '', role: 'guest', points: 0 };
 
-  // عرض الجدول حسب اليوم المحدد
-  function showDay(dayNumber) {
-    const container = document.getElementById('schedule-list');
-    container.innerHTML = '';
-    
-    // تحديث أزرار الأيام
-    [1, 2, 3].forEach(d => {
-      document.getElementById(`day${d}-btn`).classList.toggle('active', d === dayNumber);
-    });
+  function login() {
+    const name = document.getElementById('username').value;
+    const role = document.getElementById('user-role').value;
+    if(!name) return alert('برجاء أدخل الاسم');
 
-    scheduleData[dayNumber].forEach(item => {
-      container.innerHTML += `
-        <div class="timeline-item">
-          <strong>${item.time}</strong>: ${item.title}
-        </div>
-      `;
-    });
-  }
+    currentUser.name = name;
+    currentUser.role = role;
 
-  // التبديل بين لوحة المخدوم والخادم
-  function switchView(view) {
-    document.getElementById('guest-view').style.display = view === 'guest' ? 'block' : 'none';
-    document.getElementById('host-view').style.display = view === 'host' ? 'block' : 'none';
-    document.getElementById('btn-guest').classList.toggle('active', view === 'guest');
-    document.getElementById('btn-host').classList.toggle('active', view === 'host');
-  }
+    document.getElementById('auth-box').style.display = 'none';
+    document.getElementById('app-content').style.display = 'block';
 
-  // إضافة النقاط
-  let currentPoints = 0;
-  function addPoints() {
-    const name = document.getElementById('target-name').value;
-    const pts = parseInt(document.getElementById('target-points').value) || 0;
-    
-    if(!name || pts <= 0) {
-      alert("برجاء أدخل اسم المخدوم وعدد نقاط صحيح");
-      return;
+    if(role === 'host') {
+      document.querySelectorAll('.host-only').forEach(el => el.style.display = 'block');
     }
-    
-    currentPoints += pts;
-    document.getElementById('user-points').innerText = currentPoints;
-    alert(`تم إضافة ${pts} نقطة إلى ${name} بنجاح!`);
-    
-    document.getElementById('target-name').value = '';
-    document.getElementById('target-points').value = '';
   }
 
-  // تشغيل عرض اليوم الأول عند فتح الصفحة تلقائياً
-  showDay(1);
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+  }
+
+  function grantPoints() {
+    const target = document.getElementById('target-user').value;
+    const pts = document.getElementById('points-to-add').value;
+    if(target && pts) {
+      alert(`تم إضافة ${pts} نقطة إلى ${target}`);
+      document.getElementById('target-user').value = '';
+      document.getElementById('points-to-add').value = '';
+    }
+  }
 </script>
 
 </body>
