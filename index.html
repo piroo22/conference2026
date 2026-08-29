@@ -4,325 +4,216 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مؤتمر أبطال الإيمان 2026</title>
+  <!-- مكتبة قراءة الـ QR Code عبر الكاميرا -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
     
-    /* خلفية سحابية فاتحة ومبهجة */
+    /* خلفية الطبيعة والماء والسماء مع انيميشن حركة هادئة */
     body { 
-      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-      color: #2c3e50; 
+      background: linear-gradient(180deg, #6dd5ed 0%, #2193b0 50%, #11998e 75%, #38ef7d 100%);
+      background-size: 100% 200%;
+      animation: skyAnimation 12s ease infinite alternate;
+      color: #1a202c; 
       padding: 15px; 
       min-height: 100vh;
       position: relative;
     }
 
-    /* رمز الصليب الخفي في الخلفية */
-    body::before {
-      content: "┼";
+    @keyframes skyAnimation {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+
+    /* الصليب المائي البارز على الجانب */
+    .side-cross {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 350px;
-      color: rgba(255, 255, 255, 0.35);
-      z-index: 0;
+      top: 10%;
+      left: 5%;
+      font-size: 180px;
+      color: rgba(255, 255, 255, 0.25);
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
       pointer-events: none;
+      z-index: 0;
     }
 
-    .container { max-width: 800px; margin: auto; position: relative; z-index: 1; }
+    .container { max-width: 750px; margin: auto; position: relative; z-index: 1; }
 
-    /* تأثير الزجاج الشفاف الفاتح (Glassmorphism) */
+    /* تصميم Glassmorphism شفاف مثل أبل */
     .glass-card {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 20px;
-      padding: 20px;
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     }
 
-    /* الهيدر والعنوان */
-    .header-title { text-align: center; color: #1a365d; font-size: 26px; margin-bottom: 5px; }
-    .header-sub { text-align: center; color: #4a5568; font-size: 14px; margin-bottom: 15px; }
-
-    /* القائمة والتنقل */
-    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+    .header-title { text-align: center; color: #0f4c81; font-size: 28px; font-weight: 800; }
+    
+    /* التبويبات والأزرار */
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
     .nav-btn { 
-      flex: 1; 
-      padding: 12px 15px; 
-      border: none; 
-      background: rgba(255, 255, 255, 0.5); 
-      color: #2d3748; 
-      border-radius: 12px; 
-      cursor: pointer; 
-      white-space: nowrap;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      flex: 1; padding: 12px; border: none; background: rgba(255, 255, 255, 0.5); 
+      color: #0f4c81; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 15px;
     }
-    .nav-btn.active { background: #3182ce; color: #fff; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3); }
+    .nav-btn.active { background: #0f4c81; color: #fff; }
 
-    /* بطاقة النقاط للمخدوم */
-    .score-badge { font-size: 42px; color: #2b6cb0; text-align: center; font-weight: bold; margin: 10px 0; }
-
-    /* عناصر الإدخال والأزرار */
     input, select, button.action-btn { 
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; 
-      border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.7); color: #2d3748; 
-      font-size: 15px; outline: none;
+      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
+      border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.8); 
+      font-size: 16px; font-weight: bold; color: #2d3748; outline: none;
     }
-    button.action-btn { background: #3182ce; color: #fff; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
-    button.action-btn:hover { background: #2b6cb0; }
+    button.action-btn { background: #0f4c81; color: #fff; border: none; cursor: pointer; }
 
-    /* الشبكة والأزرار التفاعلية للإنجيل والأجبية */
-    .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 15px; }
-    .grid-btn { 
-      background: rgba(255, 255, 255, 0.6); 
-      border: 1px solid rgba(255, 255, 255, 0.8); 
-      padding: 15px 10px; 
-      border-radius: 12px; 
-      text-align: center; 
-      cursor: pointer; 
-      font-weight: bold;
-      color: #2c3e50;
-      transition: 0.2s;
-    }
-    .grid-btn:hover { background: #3182ce; color: #fff; }
+    /* الكاميرا وشاشة الماسح */
+    #reader { width: 100%; border-radius: 15px; overflow: hidden; margin-top: 10px; }
 
-    /* عرض النصوص والآيات */
-    .reader-box {
-      background: rgba(255, 255, 255, 0.8);
-      padding: 20px;
-      border-radius: 12px;
-      line-height: 1.8;
-      font-size: 17px;
-      color: #1a202c;
-      margin-top: 15px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .back-btn {
-      background: #e2e8f0; color: #4a5568; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-weight: bold;
+    .reader-frame {
+      width: 100%; height: 60vh; border: none; border-radius: 15px; background: #fff;
     }
   </style>
 </head>
 <body>
 
+<div class="side-cross">┼</div>
+
 <div class="container">
-  <!-- هيدر الموقع -->
   <div class="glass-card">
     <h1 class="header-title">مؤتمر أبطال الإيمان 2026</h1>
-    <p class="header-sub">كنيسة السيدة العذراء والبابا كيرلس السادس</p>
   </div>
 
-  <!-- تسجيل الدخول -->
+  <!-- تسجيل دخول منظم -->
   <div class="glass-card" id="auth-box">
-    <h3 style="margin-bottom: 10px;">تسجيل الدخول</h3>
-    <select id="user-role">
+    <h3 style="margin-bottom:15px; text-align:center;">تسجيل البيانات</h3>
+    
+    <label>الرتبة:</label>
+    <select id="user-role" onchange="toggleRoleUI()">
       <option value="guest">مخدوم</option>
       <option value="host">خادم</option>
     </select>
-    <input type="text" id="username" placeholder="أدخل اسمك بالكامل">
-    <button class="action-btn" onclick="login()">دخول إلى التطبيق</button>
+
+    <label style="margin-top:10px; display:block;">الاسم بالكامل:</label>
+    <input type="text" id="username" placeholder="اكتب اسمك">
+
+    <label style="margin-top:10px; display:block;">رقم الموبايل:</label>
+    <input type="tel" id="user-phone" placeholder="01xxxxxxxxx">
+
+    <label style="margin-top:10px; display:block;">الفصل / المجموعة:</label>
+    <select id="user-class">
+      <option value="1">فصل 1 (أرسلها لي لتحديد الأسماء)</option>
+      <option value="2">فصل 2</option>
+    </select>
+
+    <button class="action-btn" onclick="login()">دخول للمؤتمر</button>
   </div>
 
-  <!-- المحتوى الرئيسي بعد الدخول -->
+  <!-- المحتوى للتطبيقات -->
   <div id="app-content" style="display: none;">
-    <!-- شريط التنقل -->
     <div class="nav-tabs">
       <button class="nav-btn active" onclick="showTab('main-tab')">الرئيسية</button>
-      <button class="nav-btn" onclick="showTab('bible-tab')">الإنجيل</button>
-      <button class="nav-btn" onclick="showTab('agpeya-tab')">الأجبية</button>
-      <button class="nav-btn host-only" onclick="showTab('admin-tab')" style="display:none;">لوحة التحكم بالنقاط</button>
+      <button class="nav-btn" onclick="showTab('bible-tab')">الإنجيل الكامل</button>
+      <button class="nav-btn" onclick="showTab('agpeya-tab')">الأجبية كاملة</button>
+      <button class="nav-btn host-only" onclick="showTab('admin-tab')" style="display:none;">لوحة الخادم</button>
     </div>
 
     <!-- 1. الرئيسية -->
     <div id="main-tab" class="tab-content">
-      <!-- شاشة النقاط تظهر للمخدوم فقط -->
       <div class="glass-card guest-only">
-        <h3 style="text-align: center; color: #4a5568;">مجموع نقاطك</h3>
-        <div class="score-badge"><span id="my-points">0</span></div>
+        <h3 style="text-align:center;">نقاطك الحالية: <span id="my-points" style="color:#0f4c81; font-size:32px;">0</span></h3>
       </div>
-
       <div class="glass-card">
-        <h3>تفاصيل الإقامة والغرفة</h3>
-        <p style="margin-top: 10px; opacity: 0.9;">أدخل رقم غرفتك لمتابعة التسكين:</p>
-        <input type="text" id="user-room-input" placeholder="اكتب رقم غرفتك هنا...">
-        <button class="action-btn" onclick="saveRoom()">حفظ رقم الغرفة</button>
-        <p id="room-status" style="margin-top: 10px; font-weight: bold; color: #2b6cb0;"></p>
+        <h3>تسكين الأوضة</h3>
+        <input type="text" id="room-num" placeholder="رقم غرفتك">
+        <button class="action-btn" onclick="alert('تم حفظ رقم الأوضة')">حفظ الأوضة</button>
       </div>
     </div>
 
-    <!-- 2. قسم الإنجيل الداخلي -->
+    <!-- 2. الإنجيل الكامل والقطمارس من مصدر رسمي كنسي مباشرة -->
     <div id="bible-tab" class="tab-content" style="display: none;">
       <div class="glass-card">
-        <h3>الكتاب المقدس</h3>
-        
-        <!-- قائمة الأسفار -->
-        <div id="books-view">
-          <p style="margin-top: 5px; opacity: 0.8;">اختر السفر لقراءته:</p>
-          <div class="grid-list">
-            <div class="grid-btn" onclick="openBook('إنجيل متى', 28)">إنجيل متى</div>
-            <div class="grid-btn" onclick="openBook('إنجيل مرقس', 16)">إنجيل مرقس</div>
-            <div class="grid-btn" onclick="openBook('إنجيل لوقا', 24)">إنجيل لوقا</div>
-            <div class="grid-btn" onclick="openBook('إنجيل يوحنا', 21)">إنجيل يوحنا</div>
-          </div>
-        </div>
-
-        <!-- قائمة الإصحاحات -->
-        <div id="chapters-view" style="display: none;">
-          <button class="back-btn" onclick="backToBooks()">← العودة للأسفار</button>
-          <h4 id="selected-book-title"></h4>
-          <div class="grid-list" id="chapters-grid"></div>
-        </div>
-
-        <!-- قارئ النص -->
-        <div id="text-view" style="display: none;">
-          <button class="back-btn" onclick="backToChapters()">← العودة للإصحاحات</button>
-          <h4 id="chapter-title"></h4>
-          <div class="reader-box" id="chapter-text"></div>
-        </div>
+        <h3>الكتاب المقدس الكامل (تصفح وقراءة)</h3>
+        <iframe class="reader-frame" src="https://st-takla.org/pub_Deut/Deut_Read-Holy-Bible_.html"></iframe>
       </div>
     </div>
 
-    <!-- 3. قسم الأجبية الداخلي -->
+    <!-- 3. الأجبية كاملة -->
     <div id="agpeya-tab" class="tab-content" style="display: none;">
       <div class="glass-card">
-        <h3>صلوات الأجبية</h3>
-        
-        <div id="agpeya-list">
-          <p style="margin-top: 5px; opacity: 0.8;">اختر صلاة الساعة:</p>
-          <div class="grid-list">
-            <div class="grid-btn" onclick="openAgpeya('صلاة باكر')">باكر</div>
-            <div class="grid-btn" onclick="openAgpeya('صلاة الساعة الثالثة')">الثالثة</div>
-            <div class="grid-btn" onclick="openAgpeya('صلاة الساعة السادسة')">السادسة</div>
-            <div class="grid-btn" onclick="openAgpeya('صلاة الساعة التاسعة')">التاسعة</div>
-            <div class="grid-btn" onclick="openAgpeya('صلاة الغروب')">الغروب</div>
-            <div class="grid-btn" onclick="openAgpeya('صلاة النوم')">النوم</div>
-          </div>
-        </div>
-
-        <div id="agpeya-text-view" style="display: none;">
-          <button class="back-btn" onclick="backToAgpeyaList()">← العودة للأجبية</button>
-          <h4 id="agpeya-title"></h4>
-          <div class="reader-box" id="agpeya-text"></div>
-        </div>
+        <h3>صلوات الأجبية كاملة</h3>
+        <iframe class="reader-frame" src="https://st-takla.org/Agpeya_.html"></iframe>
       </div>
     </div>
 
-    <!-- 4. لوحة الخادم (لوحة إضافة النقاط) -->
+    <!-- 4. أدوات الخادم: مسح الكود بالكاميرا وإضافة النقاط والبحث والتسكين -->
     <div id="admin-tab" class="tab-content" style="display: none;">
+      <!-- الماسح الضوئي (الكاميرا) -->
       <div class="glass-card">
-        <h3 style="color: #2b6cb0;">إضافة وإدارة النقاط</h3>
-        <p style="font-size: 13px; color: #4a5568; margin-top: 5px;">يمكنك إضافة نقاط فردية للمخدومين أو نقاط جماعية للفرق:</p>
-        
-        <label style="display:block; margin-top:15px; font-weight:bold;">اسم المخدوم أو التيم:</label>
-        <input type="text" id="target-name" placeholder="أدخل اسم الشخص أو التيم">
-        
-        <label style="display:block; margin-top:10px; font-weight:bold;">عدد النقاط المراد إضافتها:</label>
-        <input type="number" id="target-points" placeholder="مثال: 50">
-        
-        <button class="action-btn" style="margin-top: 15px;" onclick="grantPoints()">إضافة النقاط فوراً</button>
+        <h3>فتح الكاميرا لقرّاءة QR Code المخدوم</h3>
+        <button class="action-btn" onclick="startScanner()">تشغيل الكاميرا الآن</button>
+        <div id="reader"></div>
+        <p id="scanner-result" style="margin-top:10px; font-weight:bold; color:#0f4c81;"></p>
+      </div>
+
+      <!-- البحث اليدوي وإضافة النقاط -->
+      <div class="glass-card">
+        <h3>بحث وإضافة النقاط</h3>
+        <input type="text" id="search-user" placeholder="ابحث باسم المخدوم أو الكود...">
+        <input type="number" id="add-pts-val" placeholder="عدد النقاط">
+        <button class="action-btn" onclick="grantPoints()">إضافة النقاط</button>
+      </div>
+
+      <!-- إدخال وتعديل التسكين -->
+      <div class="glass-card">
+        <h3>إدارة تسكين الغرف</h3>
+        <input type="text" id="target-room-user" placeholder="اسم المخدوم">
+        <input type="text" id="target-room-no" placeholder="رقم الغرفة">
+        <button class="action-btn" onclick="alert('تم تحديث غرفة المخدوم')">تسكين في الغرفة</button>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
-  let currentUser = { name: '', role: 'guest', points: 0 };
-  let currentBook = '';
-
   function login() {
     const name = document.getElementById('username').value;
     const role = document.getElementById('user-role').value;
-    if(!name) return alert('برجاء أدخل الاسم بالكامل');
-
-    currentUser.name = name;
-    currentUser.role = role;
+    if(!name) return alert('يرجى أدخال الاسم');
 
     document.getElementById('auth-box').style.display = 'none';
     document.getElementById('app-content').style.display = 'block';
 
     if(role === 'host') {
-      document.querySelectorAll('.host-only').forEach(el => el.style.display = 'block');
-      document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.host-only').forEach(e => e.style.display = 'block');
+      document.querySelectorAll('.guest-only').forEach(e => e.style.display = 'none');
     }
   }
 
-  function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).style.display = 'block';
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(e => e.style.display = 'none');
+    document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+    document.getElementById(id).style.display = 'block';
     event.target.classList.add('active');
   }
 
-  function saveRoom() {
-    const val = document.getElementById('user-room-input').value;
-    if(val) {
-      document.getElementById('room-status').innerText = `تم تسجيل إقامتك في: ${val}`;
-    }
+  /* تشغيل كاميرا الهاتف لقرّاءة الـ QR Code */
+  function startScanner() {
+    const html5LtCode = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+    html5LtCode.render((decodedText) => {
+      document.getElementById('scanner-result').innerText = "تم مسح الكود: " + decodedText;
+      document.getElementById('search-user').value = decodedText;
+      html5LtCode.clear();
+    });
   }
 
-  /* برمجية قراءة الإنجيل */
-  function openBook(bookName, chapterCount) {
-    currentBook = bookName;
-    document.getElementById('books-view').style.display = 'none';
-    document.getElementById('chapters-view').style.display = 'block';
-    document.getElementById('selected-book-title').innerText = bookName;
-    
-    const grid = document.getElementById('chapters-grid');
-    grid.innerHTML = '';
-    for(let i = 1; i <= chapterCount; i++) {
-      grid.innerHTML += `<div class="grid-btn" onclick="openChapter(${i})">إصحاح ${i}</div>`;
-    }
-  }
-
-  function backToBooks() {
-    document.getElementById('books-view').style.display = 'block';
-    document.getElementById('chapters-view').style.display = 'none';
-  }
-
-  function openChapter(chNum) {
-    document.getElementById('chapters-view').style.display = 'none';
-    document.getElementById('text-view').style.display = 'block';
-    document.getElementById('chapter-title').innerText = `${currentBook} - إصحاح ${chNum}`;
-    
-    // نص توضيحي هسيتم ربطه بالفايبربيس لاحقاً
-    document.getElementById('chapter-text').innerText = `[نص ${currentBook} - الإصحاح ${chNum}]\n\n1 فِي الْبَدْءِ كَانَ الْكَلِمَةُ، وَالْكَلِمَةُ كَانَ عِنْدَ اللهِ، وَكَانَ الْكَلِمَةُ اللهَ.\n2 هذَا كَانَ فِي الْبَدْءِ عِنْدَ اللهِ.\n3 كُلُّ شَيْءٍ بِهِ كَانَ، وَبِغَيْرِهِ لَمْ يَكُنْ شَيْءٌ مِمَّا كَانَ.`;
-  }
-
-  function backToChapters() {
-    document.getElementById('text-view').style.display = 'none';
-    document.getElementById('chapters-view').style.display = 'block';
-  }
-
-  /* برمجية الأجبية */
-  function openAgpeya(title) {
-    document.getElementById('agpeya-list').style.display = 'none';
-    document.getElementById('agpeya-text-view').style.display = 'block';
-    document.getElementById('agpeya-title').innerText = title;
-    document.getElementById('agpeya-text').innerText = `[نص ${title}]\n\nبِاسْمِ الآبِ وَالابْنِ وَالرُّوحِ الْقُدُسِ الإِلهِ الْواحِدِ، آمِين.\n\nتَسْبِحَةُ صَلاَةِ ${title} المَبارَكَةِ، أَقَدِّمُها لِلْمَلِكِ المَسِيحِ وَإِلهِي، وَأَرْجُوهُ أَنْ يَغْفِرَ لِي ذُنُوبِي...`;
-  }
-
-  function backToAgpeyaList() {
-    document.getElementById('agpeya-text-view').style.display = 'none';
-    document.getElementById('agpeya-list').style.display = 'block';
-  }
-
-  /* إضافة النقاط للخادم */
   function grantPoints() {
-    const target = document.getElementById('target-name').value;
-    const pts = document.getElementById('target-points').value;
-    if(!target || !pts) return alert('برجاء إدخال الاسم وعدد النقاط');
-    
-    alert(`تم إضافة ${pts} نقطة بنجاح إلى: ${target}`);
-    document.getElementById('target-name').value = '';
-    document.getElementById('target-points').value = '';
+    const u = document.getElementById('search-user').value;
+    const p = document.getElementById('add-pts-val').value;
+    if(u && p) alert(`تم إضافة ${p} نقطة للمخدوم: ${u}`);
   }
 </script>
-
 </body>
 </html>
