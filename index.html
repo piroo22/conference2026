@@ -1,1 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مؤتمر أبطال الإيمان 2026</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f0f2f5; margin: 0; padding: 15px; }
+    .container { max-width: 600px; margin: auto; }
+    .nav { display: flex; gap: 10px; margin-bottom: 20px; }
+    .nav button { flex: 1; padding: 12px; border: none; background: #2c3e50; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    .nav button.active { background: #27ae60; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    .score-badge { font-size: 32px; color: #27ae60; text-align: center; font-weight: bold; margin: 10px 0; }
+    .day-selector { display: flex; gap: 5px; margin-bottom: 15px; }
+    .day-btn { flex: 1; padding: 8px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .day-btn.active { background: #2980b9; color: white; }
+    .timeline-item { border-right: 4px solid #2980b9; padding-right: 12px; margin-bottom: 12px; background: #f9f9f9; padding: 10px; border-radius: 0 8px 8px 0; }
+    input, button.action-btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
+    button.action-btn { background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+  </style>
+</head>
+<body>
 
+<div class="container">
+  <!-- التبديل بين اللوحات -->
+  <div class="nav">
+    <button onclick="switchView('guest')" id="btn-guest" class="active">لوحة المخدوم</button>
+    <button onclick="switchView('host')" id="btn-host">لوحة الخادم</button>
+  </div>
+
+  <!-- واجهة المخدوم -->
+  <div id="guest-view">
+    <div class="card">
+      <h2 style="text-align: center; color: #2c3e50; margin: 0;">مؤتمر أبطال الإيمان 2026</h2>
+      <p style="text-align: center; color: #7f8c8d; margin-top: 5px;">بيت البستان</p>
+      <div class="score-badge">نقاطك: <span id="user-points">0</span></div>
+    </div>
+
+    <div class="card">
+      <h3>جدول الفعاليات</h3>
+      <div class="day-selector">
+        <button class="day-btn active" onclick="showDay(1)" id="day1-btn">اليوم الأول (3/9)</button>
+        <button class="day-btn" onclick="showDay(2)" id="day2-btn">اليوم الثاني (4/9)</button>
+        <button class="day-btn" onclick="showDay(3)" id="day3-btn">اليوم الثالث (5/9)</button>
+      </div>
+      <div id="schedule-list"></div>
+    </div>
+  </div>
+
+  <!-- واجهة الخادم -->
+  <div id="host-view" style="display: none;">
+    <div class="card">
+      <h3>إضافة نقاط للمخدومين والتيمات</h3>
+      <label>اسم المخدوم / التيم:</label>
+      <input type="text" id="target-name" placeholder="أدخل الاسم">
+      
+      <label>عدد النقاط:</label>
+      <input type="number" id="target-points" placeholder="مثال: 50">
+      
+      <button class="action-btn" onclick="addPoints()">إضافة النقاط فوراً</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // جدول الفعاليات الكامل للمؤتمر
+  const scheduleData = {
+    1: [
+      { time: "07:00 - 09:00", title: "ساعتين في السماء" },
+      { time: "09:30 - 11:00", title: "تحرك" },
+      { time: "11:00 - 12:00", title: "فين اوضتي؟" },
+      { time: "12:00 - 01:00", title: "الـ..... الأول" },
+      { time: "01:00 - 03:00", title: "الدنيا حررر" },
+      { time: "03:00 - 04:00", title: "الأكل للجميع" },
+      { time: "04:00 - 05:30", title: "راحة" },
+      { time: "05:30 - 06:00", title: "ما أحلى ساعة الصلاة" },
+      { time: "06:00 - 07:00", title: "الـ..... الثانية" },
+      { time: "07:00 - 08:00", title: "هوس ايروف" },
+      { time: "08:00 - 09:30", title: "عشاء" },
+      { time: "09:30 - 10:30", title: "دور معايا" },
+      { time: "10:30 - 12:30", title: "مسابقة وتحديات" },
+      { time: "01:00", title: "تصبحوا على خير" }
+    ],
+    2: [
+      { time: "07:00 - 09:00", title: "ساعتين في السماء" },
+      { time: "09:00 - 10:00", title: "الـ..... الثالثة" },
+      { time: "10:00 - 11:00", title: "عالسفرة" },
+      { time: "11:00 - 12:00", title: "براحتك" },
+      { time: "01:00 - 03:00", title: "الدنيا حررر" },
+      { time: "03:00 - 04:00", title: "الأكل للجميع" },
+      { time: "04:00 - 05:30", title: "راحة" },
+      { time: "05:30 - 06:00", title: "ما أحلى ساعة الصلاة" },
+      { time: "06:00 - 07:00", title: "الـ..... الرابعة" },
+      { time: "07:00 - 08:00", title: "هوس ايروف" },
+      { time: "08:00 - 09:30", title: "عشاء" },
+      { time: "09:30 - 10:00", title: "فقرة مسابقات" },
+      { time: "10:00 - 02:00", title: "سهرة" },
+      { time: "02:00", title: "تصبحوا على خير" }
+    ],
+    3: [
+      { time: "07:00", title: "صباح الخير" },
+      { time: "07:00 - 08:00", title: "يالا نلم الشنط" },
+      { time: "08:00 - 09:00", title: "عالسفرة" },
+      { time: "09:00", title: "يالا عالدير" },
+      { time: "03:00", title: "يالا نمشي" },
+      { time: "06:00", title: "حمد الله ع السلامة" }
+    ]
+  };
+
+  // عرض الجدول حسب اليوم المحدد
+  function showDay(dayNumber) {
+    const container = document.getElementById('schedule-list');
+    container.innerHTML = '';
+    
+    // تحديث أزرار الأيام
+    [1, 2, 3].forEach(d => {
+      document.getElementById(`day${d}-btn`).classList.toggle('active', d === dayNumber);
+    });
+
+    scheduleData[dayNumber].forEach(item => {
+      container.innerHTML += `
+        <div class="timeline-item">
+          <strong>${item.time}</strong>: ${item.title}
+        </div>
+      `;
+    });
+  }
+
+  // التبديل بين لوحة المخدوم والخادم
+  function switchView(view) {
+    document.getElementById('guest-view').style.display = view === 'guest' ? 'block' : 'none';
+    document.getElementById('host-view').style.display = view === 'host' ? 'block' : 'none';
+    document.getElementById('btn-guest').classList.toggle('active', view === 'guest');
+    document.getElementById('btn-host').classList.toggle('active', view === 'host');
+  }
+
+  // إضافة النقاط
+  let currentPoints = 0;
+  function addPoints() {
+    const name = document.getElementById('target-name').value;
+    const pts = parseInt(document.getElementById('target-points').value) || 0;
+    
+    if(!name || pts <= 0) {
+      alert("برجاء أدخل اسم المخدوم وعدد نقاط صحيح");
+      return;
+    }
+    
+    currentPoints += pts;
+    document.getElementById('user-points').innerText = currentPoints;
+    alert(`تم إضافة ${pts} نقطة إلى ${name} بنجاح!`);
+    
+    document.getElementById('target-name').value = '';
+    document.getElementById('target-points').value = '';
+  }
+
+  // تشغيل عرض اليوم الأول عند فتح الصفحة تلقائياً
+  showDay(1);
+</script>
+
+</body>
+</html>
