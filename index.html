@@ -3,340 +3,349 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مؤتمر أبطال الإيمان 2026</title>
+  <title>منصة أبطال الإيمان 2026</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; margin: 0; padding: 0; }
     
     body { 
-      background: linear-gradient(180deg, #4facfe 0%, #00f2fe 45%, #43e97b 85%, #38f9d7 100%);
-      background-size: 100% 200%;
-      animation: skyShift 10s ease infinite alternate;
-      color: #1a202c; 
+      background: #0f172a;
+      color: #f8fafc; 
       min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px;
     }
 
-    @keyframes skyShift {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 0% 100%; }
-    }
-
-    .cross-bg {
-      position: fixed;
-      font-size: 140px;
-      color: rgba(255, 255, 255, 0.22);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 1; }
-
-    .full-header {
+    .mobile-screen {
       width: 100%;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      max-width: 420px;
+      background: #1e293b;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #334155;
+      position: relative;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .top-bar {
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
     }
 
-    .header-right { text-align: right; }
-    .header-title { font-size: 18px; font-weight: 800; color: #0d3b66; }
-    .header-sub { font-size: 12px; color: #1d3557; font-weight: bold; }
+    .brand-title { font-size: 18px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
 
-    .menu-icon { font-size: 28px; cursor: pointer; color: #0d3b66; font-weight: bold; }
-    
-    .side-drawer {
-      position: fixed;
-      top: 0; right: -100%;
-      width: 280px; height: 100%;
-      background: rgba(255, 255, 255, 0.35);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-left: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-      transition: 0.4s ease;
-      z-index: 100;
-      padding: 25px 20px;
+    /* Content Area */
+    .app-body { padding: 15px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
+
+    /* Cards - Same style as Image */
+    .card {
+      background: #334155;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid #475569;
     }
 
-    .side-drawer.open { right: 0; }
-    .drawer-item { 
-      display: block;
-      text-decoration: none;
-      padding: 14px; margin-bottom: 10px; border-radius: 12px; 
-      cursor: pointer; font-weight: bold; color: #0d3b66;
-      background: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      text-align: center;
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 24px;
-      padding: 22px;
-      margin-top: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    input, select, button.action-btn, .hour-btn { 
-      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; 
-      border: 1px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); 
-      font-size: 15px; outline: none; font-weight: bold; color: #0d3b66;
-      text-align: center; text-decoration: none; display: inline-block;
-    }
-
-    button.action-btn { background: #0d3b66; color: white; border: none; cursor: pointer; }
-
-    .hour-btn {
-      background: rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-      border: 1px solid rgba(13, 59, 102, 0.2);
-    }
-
-    .agpeya-text {
-      background: rgba(255, 255, 255, 0.85);
-      padding: 20px;
+    /* Role Selector */
+    .role-btn {
+      width: 100%;
+      padding: 16px;
       border-radius: 14px;
-      margin-top: 15px;
-      max-height: 500px;
-      overflow-y: auto;
-      line-height: 2;
+      border: none;
+      background: #2563eb;
+      color: white;
       font-size: 16px;
-      color: #1a202c;
-      text-align: justify;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+    .role-btn.servant { background: #d97706; }
+
+    /* XP Card (Image style) */
+    .xp-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+      border: 1px solid #3b82f6;
+      text-align: center;
+      position: relative;
+    }
+    .level-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: #f59e0b;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .xp-number { font-size: 28px; font-weight: 800; color: #fbbf24; margin: 5px 0; }
+    .progress-bar {
+      height: 8px;
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill { width: 75%; height: 100%; background: #f59e0b; }
+
+    /* QR Code Card */
+    .qr-card {
+      background: #ffffff;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .qr-info { text-align: right; }
+    .user-code { font-family: monospace; font-weight: bold; background: #e2e8f0; padding: 4px 8px; border-radius: 6px; font-size: 13px; }
+
+    /* Team/Room Section */
+    .room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .badge-orange { background: #ea580c; color: white; padding: 3px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; }
+    .members-list { list-style: none; margin-top: 8px; font-size: 14px; }
+    .members-list li { margin-bottom: 4px; color: #cbd5e1; }
+
+    /* History Logs */
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px solid #475569;
+    }
+    .log-points { color: #4ade80; font-weight: bold; }
+
+    /* Inputs & Buttons */
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      outline: none;
     }
 
-    .room-card {
-      background: rgba(255,255,255,0.4);
-      border-radius: 16px;
-      padding: 15px;
-      margin-top: 12px;
-      border: 1px solid rgba(255,255,255,0.6);
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #0f172a;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #334155;
     }
+    .nav-btn { color: #94a3b8; text-decoration: none; font-size: 12px; text-align: center; cursor: pointer; }
+    .nav-btn.active { color: #38bdf8; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div class="cross-bg" style="top: 12%; right: 6%;">┼</div>
-  <div class="cross-bg" style="top: 65%; left: 8%;">┼</div>
+<div class="mobile-screen">
 
-  <div class="full-header">
-    <div class="menu-icon" onclick="toggleMenu()">☰</div>
-    <div class="header-right">
-      <div class="header-title">أبطال الإيمان 2026</div>
-      <div class="header-sub">كنيسة السيدة العذراء والبابا كيرلس</div>
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="brand-title">❖ أبطال الإيمان</div>
+    <span id="role-tag" style="font-size: 12px; background: #334155; padding: 4px 10px; border-radius: 12px;">اختيار الوضع</span>
+  </div>
+
+  <div class="app-body">
+
+    <!-- 1. شاشة اختيار صفة المستخدم (خادم / مخدوم) -->
+    <div id="role-selection-screen">
+      <h3 style="text-align: center; margin-top: 30px; margin-bottom: 20px;">مرحباً بك، اختر نوع الدخول</h3>
+      <button class="role-btn" onclick="selectRole('student')">دخول كـ (مخدوم / طالب)</button>
+      <button class="role-btn servant" onclick="selectRole('servant')">دخول كـ (خادم)</button>
     </div>
-  </div>
 
-  <div class="side-drawer" id="drawer">
-    <div style="text-align: left; cursor: pointer; font-weight: bold; color: #0d3b66; margin-bottom: 20px;" onclick="toggleMenu()">✕ إغلاق</div>
-    <div class="drawer-item" onclick="navigate('main-view')">الصفحة الرئيسية</div>
-    <div class="drawer-item" onclick="navigate('agpeya-full-view')">الأجبية كاملة (القطمارس)</div>
-  </div>
-
-  <div class="container">
-
-    <!-- تسجيل الدخول -->
-    <div class="glass-card" id="auth-screen">
-      <h3 style="text-align: center; margin-bottom: 10px; color: #0d3b66;">تسجيل الدخول</h3>
-      
-      <label>الاسم الكامل:</label>
-      <input type="text" id="reg-name" placeholder="أدخل اسمك الثلاثي/الرباعي">
-
-      <label style="margin-top:10px; display:block;">رقم التليفون (11 رقم بالإنجليزي):</label>
-      <input type="tel" id="reg-phone" maxlength="11" placeholder="01XXXXXXXXX" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-
-      <label style="margin-top:10px; display:block;">الفصل الدراسي:</label>
-      <select id="reg-class">
-        <option value="أولى ثانوي - البابا اثناسيوس">أولى ثانوي - البابا اثناسيوس</option>
-        <option value="ثانية ثانوي - البابا كيرلس عمود الدين">ثانية ثانوي - البابا كيرلس عمود الدين</option>
-        <option value="ثالثة ثانوي - البابا ديسقوروس">ثالثة ثانوي - البابا ديسقوروس</option>
+    <!-- 2. شاشة تسجيل البيانات للمخدوم -->
+    <div id="student-login" style="display: none;">
+      <h3>تسجيل بيانات المخدوم</h3>
+      <input type="text" id="st-name" placeholder="الاسم بالكامل">
+      <input type="tel" id="st-phone" placeholder="رقم الهاتف">
+      <select id="st-room">
+        <option value="غرفة دليلة - أ. مينا">غرفة دليلة - أ. مينا</option>
+        <option value="غرفة صموئيل - أ. كيرلس">غرفة صموئيل - أ. كيرلس</option>
+        <option value="غرفة داود - أ. يوسف">غرفة داود - أ. يوسف</option>
       </select>
-
-      <button class="action-btn" onclick="registerUser()">دخول</button>
+      <button class="role-btn" onclick="startStudentDashboard()" style="margin-top: 15px;">دخول للوحة التحكم</button>
     </div>
 
-    <!-- اختيار الأوضة -->
-    <div class="glass-card" id="room-select-screen" style="display: none;">
-      <h3 style="color: #0d3b66;">اختر غرفتك</h3>
-      <p style="font-size: 13px; color: #1d3557; margin-top: 5px;">تنبيه: لا يمكن تغيير الأوضة بعد الحفظ.</p>
-      <div id="rooms-container"></div>
-    </div>
-
-    <!-- الرئيسية -->
-    <div id="main-view" class="app-screen" style="display: none;">
-      <div class="glass-card">
-        <h3 style="color: #0d3b66;">مرحباً، <span id="user-display-name"></span></h3>
-        <p style="font-size: 14px; opacity: 0.9; margin-top: 4px;" id="user-display-class"></p>
+    <!-- 3. شاشة المخدوم (مطابقة للصورة المرسلة) -->
+    <div id="student-dashboard" style="display: none;">
+      
+      <!-- كارت نقاط الـ XP والمستوى -->
+      <div class="card xp-card">
+        <div class="level-badge">مستوى <span id="user-level">15</span></div>
+        <div style="font-size: 12px; color: #93c5fd;">XP Score</div>
+        <div class="xp-number" id="user-xp">12,500 <span style="font-size: 14px;">نقاط XP</span></div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div style="font-size: 10px; color: #94a3b8; margin-top: 5px;">75% إلى المستوى التالي</div>
       </div>
 
-      <div class="glass-card">
-        <h3 style="color: #0d3b66;">مجموع نقاطك</h3>
-        <div style="font-size: 32px; font-weight: bold; color: #0d3b66; margin: 10px 0;"><span id="user-points">0</span> نقطة</div>
+      <!-- كارت الـ QR Code -->
+      <div class="card qr-card">
+        <div class="qr-info">
+          <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">كيو آر كود</div>
+          <div style="font-size: 11px; color: #64748b;">كود المستخدم:</div>
+          <div class="user-code" id="user-code-txt">AGH-842-X0</div>
+        </div>
+        <div id="qrcode"></div>
       </div>
 
-      <div class="glass-card">
-        <h3 style="color: #0d3b66;">بيانات أوضتك</h3>
-        <div id="my-room-details"></div>
+      <!-- كارت الفريق والغرفة -->
+      <div class="card">
+        <div class="room-header">
+          <div>
+            <div style="font-weight: bold; font-size: 15px;">الفريق والغرفة</div>
+            <div style="font-size: 12px; color: #38bdf8;" id="room-display-name">فريق دلتا</div>
+          </div>
+          <span class="badge-orange">فريقك</span>
+        </div>
+        <hr style="border-color: #475569; margin: 8px 0;">
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">أعضاء الغرفة:</div>
+        <ul class="members-list" id="room-members">
+          <li>• أحمد (أنت)</li>
+          <li>• ليلي محمود</li>
+          <li>• مازن علي</li>
+        </ul>
       </div>
 
-      <div class="glass-card">
-        <h3 style="color: #0d3b66; margin-bottom:10px;">صلوات الأجبية الكاملة</h3>
-        <button class="action-btn" onclick="navigate('agpeya-full-view')">فتح صلوات الأجبية كاملة</button>
-      </div>
-    </div>
-
-    <!-- شاشة الأجبية المباشرة الكاملة من القطمارس -->
-    <div id="agpeya-full-view" class="app-screen" style="display: none;">
-      <div class="glass-card">
-        <h3 style="color: #0d3b66; text-align:center;">الأجبية كاملة (من القطمارس)</h3>
-        <p style="font-size: 12px; text-align:center; color:#1d3557; margin-bottom:10px;">اختر الساعة لتحميل نص الصلاة كاملاً بدون أي اختصار:</p>
-        
-        <button class="hour-btn" onclick="fetchFullPrayer(1)">صلاة باكر كاملة</button>
-        <button class="hour-btn" onclick="fetchFullPrayer(3)">صلاة الساعة الثالثة كاملة</button>
-        <button class="hour-btn" onclick="fetchFullPrayer(6)">صلاة الساعة السادسة كاملة</button>
-        <button class="hour-btn" onclick="fetchFullPrayer(9)">صلاة الساعة التاسعة كاملة</button>
-        <button class="hour-btn" onclick="fetchFullPrayer(11)">صلاة الغروب كاملة</button>
-        <button class="hour-btn" onclick="fetchFullPrayer(12)">صلاة النوم كاملة</button>
-
-        <div id="prayer-content-full" class="agpeya-text">
-          اختر صلاة من الأعلى، وسيتم جلب كافة المزامير والإنجيل والقطع والتحليل من خادم القطمارس الكنسي تلقائياً.
+      <!-- كارت سجل النقاط -->
+      <div class="card">
+        <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px;">سجل النقاط</div>
+        <div id="logs-container">
+          <div class="log-item">
+            <span>إنهاء التحدي الأسبوعي</span>
+            <span class="log-points">+200 XP</span>
+          </div>
+          <div class="log-item">
+            <span>مساهمة في الكود</span>
+            <span class="log-points">+50 XP</span>
+          </div>
+          <div class="log-item">
+            <span>مكافأة الفريق</span>
+            <span class="log-points">+100 XP</span>
+          </div>
         </div>
       </div>
+
+    </div>
+
+    <!-- 4. شاشة لوحة تحكم الخادم -->
+    <div id="servant-dashboard" style="display: none;">
+      <h3 style="margin-bottom: 15px; color: #f59e0b;">لوحة تحكم الخادم</h3>
+      
+      <div class="card">
+        <div style="font-weight: bold; margin-bottom: 8px;">إضافة نقاط لمخدوم</div>
+        <label style="font-size: 12px;">أدخل كود المخدوم أو اختر اسمه:</label>
+        <input type="text" id="servant-target-code" placeholder="مثال: AGH-842-X0">
+        <label style="font-size: 12px; margin-top: 8px; display: block;">عدد نقاط الـ XP:</label>
+        <input type="number" id="servant-add-xp" placeholder="100">
+        <label style="font-size: 12px; margin-top: 8px; display: block;">سبب النقط (التحدي/الحضور...):</label>
+        <input type="text" id="servant-reason" placeholder="حضور القداس / التحدي">
+        <button class="role-btn servant" onclick="addPointsByServant()" style="margin-top: 12px;">إضافة النقاط الآن</button>
+      </div>
+
+      <div class="card">
+        <div style="font-weight: bold; margin-bottom: 8px;">إدارة الغرف والمخدومين</div>
+        <div style="font-size: 13px; color: #cbd5e1;">• عدد المخدومين المسجلين: 18</div>
+        <div style="font-size: 13px; color: #cbd5e1;">• عدد الغرف النشطة: 5 غرف</div>
+      </div>
     </div>
 
   </div>
 
+  <!-- Bottom Nav Bar -->
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="location.reload()">الرئيسية</div>
+    <div class="nav-btn" onclick="alert('شاشة التحديات')">التحديات</div>
+    <div class="nav-btn" onclick="alert('الملف الشخصي')">حسابي</div>
+  </div>
+
+</div>
+
 <script>
-  let roomsData = [
-    { id: 1, servant: "أ. مينا خادم", members: ["بيشوي جرجس"] },
-    { id: 2, servant: "أ. كيرلس خادم", members: [] },
-    { id: 3, servant: "أ. يوسف خادم", members: [] },
-    { id: 4, servant: "أ. مارك خادم", members: [] },
-    { id: 5, servant: "أ. بيتر خادم", members: [] }
-  ];
+  let userData = {
+    name: "",
+    role: "",
+    code: "AGH-842-X0",
+    xp: 12500,
+    level: 15,
+    room: ""
+  };
 
-  let activeUser = null;
+  function selectRole(role) {
+    userData.role = role;
+    document.getElementById('role-selection-screen').style.display = 'none';
 
-  function toggleMenu() {
-    document.getElementById('drawer').classList.toggle('open');
+    if (role === 'student') {
+      document.getElementById('role-tag').innerText = 'وضع المخدوم';
+      document.getElementById('student-login').style.display = 'block';
+    } else {
+      document.getElementById('role-tag').innerText = 'وضع الخادم';
+      document.getElementById('servant-dashboard').style.display = 'block';
+    }
   }
 
-  function registerUser() {
-    const name = document.getElementById('reg-name').value;
-    const phone = document.getElementById('reg-phone').value;
-    const userClass = document.getElementById('reg-class').value;
+  function startStudentDashboard() {
+    const name = document.getElementById('st-name').value;
+    const room = document.getElementById('st-room').value;
 
-    if (!name || phone.length !== 11) {
-      alert("برجاء إدخال الاسم ورقم تليفون صحيح مكون من 11 رقم");
+    if (!name) {
+      alert("برجاء أدخل اسمك أولاً");
       return;
     }
 
-    activeUser = { name, phone, userClass, roomId: null };
-    document.getElementById('auth-screen').style.display = 'none';
-    renderRooms();
-    document.getElementById('room-select-screen').style.display = 'block';
-  }
+    userData.name = name;
+    userData.room = room;
 
-  function renderRooms() {
-    const container = document.getElementById('rooms-container');
-    container.innerHTML = '';
-    roomsData.forEach(room => {
-      const isFull = room.members.length >= 4;
-      container.innerHTML += `
-        <div class="room-card">
-          <div style="display:flex; justify-content:space-between; font-weight:bold; color:#0d3b66;">
-            <span>أوضة رقم ${room.id}</span>
-            <span>(${room.members.length} / 4)</span>
-          </div>
-          <div style="margin-top:8px; font-size:14px;">
-            <strong>الخادم المسؤول:</strong> ${room.servant}<br>
-            <strong>المخدومين:</strong> ${room.members.length > 0 ? room.members.join(', ') : 'خالية'}
-          </div>
-          <button class="action-btn" style="margin-top:8px;" 
-            ${isFull ? 'disabled style="background:#ccc;"' : ''} 
-            onclick="selectRoom(${room.id})">
-            ${isFull ? 'مكتملة' : 'حفظ واختيار الأوضة'}
-          </button>
-        </div>
-      `;
+    document.getElementById('student-login').style.display = 'none';
+    document.getElementById('student-dashboard').style.display = 'block';
+    document.getElementById('room-display-name').innerText = room;
+
+    // Generate QR Code
+    document.getElementById("qrcode").innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), {
+      text: userData.code,
+      width: 65,
+      height: 65
     });
   }
 
-  function selectRoom(roomId) {
-    const room = roomsData.find(r => r.id === roomId);
-    if (room && room.members.length < 4) {
-      room.members.push(activeUser.name);
-      activeUser.roomId = roomId;
-      document.getElementById('room-select-screen').style.display = 'none';
-      document.getElementById('user-display-name').innerText = activeUser.name;
-      document.getElementById('user-display-class').innerText = activeUser.userClass;
-      updateMyRoomUI();
-      document.getElementById('main-view').style.display = 'block';
+  function addPointsByServant() {
+    const code = document.getElementById('servant-target-code').value;
+    const xp = document.getElementById('servant-add-xp').value;
+    const reason = document.getElementById('servant-reason').value;
+
+    if (!code || !xp) {
+      alert("برجاء إدخال كود المخدوم وعدد النقاط");
+      return;
     }
-  }
 
-  function updateMyRoomUI() {
-    const room = roomsData.find(r => r.id === activeUser.roomId);
-    document.getElementById('my-room-details').innerHTML = `
-      <p><strong>أوضة رقم:</strong> ${room.id}</p>
-      <p><strong>الخادم:</strong> ${room.servant}</p>
-      <p><strong>المتواجدون معك:</strong> ${room.members.join(', ')}</p>
-    `;
-  }
-
-  function navigate(screenId) {
-    if (document.getElementById('drawer').classList.contains('open')) {
-      toggleMenu();
-    }
-    document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
-    document.getElementById(screenId).style.display = 'block';
-  }
-
-  // دالة لجلب النص الكامل لصلوات الأجبية عبر الـ Katamars API مباشر بدون نقص
-  async function fetchFullPrayer(hour) {
-    const displayBox = document.getElementById('prayer-content-full');
-    displayBox.innerHTML = "جاري تحميل نص الصلاة كاملاً من القطمارس الكنسي... برجاء الانتظار لحظات.";
-    
-    try {
-      const response = await fetch(`https://api.katamars.app/api/Agpeya/${hour}`);
-      if (!response.ok) throw new Error("تعذر جلب البيانات");
-      const data = await response.json();
-
-      let fullHTML = `<h3 style="text-align:center; color:#0d3b66;">${data.title || 'صلاة الأجبية'}</h3><hr style="margin:10px 0;"><br>`;
-      
-      if (data.sections && data.sections.length > 0) {
-        data.sections.forEach(sec => {
-          fullHTML += `<b>${sec.title || ''}</b><br><p>${sec.content || sec.text || ''}</p><br>`;
-        });
-      } else if(data.content) {
-        fullHTML += `<p>${data.content}</p>`;
-      } else {
-        fullHTML += `<p>${JSON.stringify(data)}</p>`;
-      }
-
-      displayBox.innerHTML = fullHTML;
-    } catch (error) {
-      displayBox.innerHTML = `
-        <div style="text-align:center; color:#c53030;">
-          <b>تنبيه: تعذر الاتصال التلقائي بالخادم الكنسي المباشر.</b><br><br>
-          يمكنك قراءة الأجبية كاملة مباشرة من موقع القطمارس الرسمي عبر الرابط التالي:<br><br>
-          <a href="https://katamars.app/agpeya" target="_blank" style="color:#0d3b66; font-weight:bold;">فتح الأجبية كاملة في القطمارس ↗</a>
-        </div>
-      `;
-    }
+    alert(`تم بنجاح إضافة ${xp} XP للمخدوم صاحب الكود (${code}) عن: ${reason || 'نشاط'}`);
+    document.getElementById('servant-target-code').value = '';
+    document.getElementById('servant-add-xp').value = '';
+    document.getElementById('servant-reason').value = '';
   }
 </script>
+
 </body>
 </html>
