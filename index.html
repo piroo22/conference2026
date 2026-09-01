@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ⲙⲱⲓⲧ — أبطال الايمان ٢٠٢٦</title>
 
+<!-- Firebase SDKs (Compat Version) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -246,17 +247,18 @@ footer.page-footer{text-align:center;font-size:.76rem;color:#8a8776;margin-top:3
 
 <script>
 /* =========================================================
-   1) إعدادات Firebase — متحطوطة بالفعل ببيانات مشروعك
+   1) إعدادات Firebase الصحيحة الخاصه بمشروعك
    ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyBBjbrxbeLGsrRiZdQi6BMLNEHvBY2hMn8",
+  apiKey: "AIzaSyBBjbrxbeLGsrRiZdQi6BMlNEHvBY2hMn8",
   authDomain: "mo2tmr-56c62.firebaseapp.com",
   projectId: "mo2tmr-56c62",
   storageBucket: "mo2tmr-56c62.firebasestorage.app",
   messagingSenderId: "305917735317",
-  appId: "1:305917735317:web:326b80f593fb4dc9b6c69c"
+  appId: "1:305917735317:web:326b80f593fb4dc9b6c69c",
+  measurementId: "G-VH5JZZD5FS"
 };
-const SERVANT_CODE = "MOWIT2026"; // كود سري للخدام بس، غيّره براحتك
+const SERVANT_CODE = "MOWIT2026";
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -265,7 +267,7 @@ const db = firebase.firestore();
 function usernameToEmail(u){ return u.trim().toLowerCase().replace(/\s+/g,"_") + "@mowit.local"; }
 
 /* =========================================================
-   2) جدول البرنامج (من بوستر المؤتمر)
+   2) جدول البرنامج
    ========================================================= */
 const SCHEDULE = [
   { id:"thu", label:"الخميس", dateLabel:"٣ / ٩ / ٢٠٢٦", items:[
@@ -344,7 +346,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e)=>{
   try{
     await auth.signInWithEmailAndPassword(usernameToEmail(username), password);
   }catch(err){
-    errBox.textContent = "اسم المستخدم أو كلمة السر غلط.";
+    errBox.textContent = "اسم المستخدم أو كلمة السر غير صحيحة.";
     errBox.classList.add("show");
   }
 });
@@ -356,7 +358,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e)=>{
   const role = document.getElementById("signupRole").value;
   const code = document.getElementById("servantCode").value;
   if(role === "servant" && code !== SERVANT_CODE){
-    errBox.textContent = "كود الخادم غلط.";
+    errBox.textContent = "كود الخادم غير صحيح.";
     errBox.classList.add("show");
     return;
   }
@@ -369,7 +371,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e)=>{
       username, name, role, points:0, createdAt: Date.now()
     });
   }catch(err){
-    errBox.textContent = err.message || "حصل خطأ، جرب تاني.";
+    errBox.textContent = err.message || "حدث خطأ أثناء إنشاء الحساب.";
     errBox.classList.add("show");
   }
 });
@@ -377,7 +379,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e)=>{
 document.getElementById("logoutBtn").onclick = () => auth.signOut();
 
 /* =========================================================
-   4) الداشبورد
+   4) الداشبورد والنقاط
    ========================================================= */
 let me = null;
 let unsubLeaderboard = null;
@@ -451,7 +453,7 @@ function applyFilterAndRender(){
   const container = document.getElementById("camperList");
   container.innerHTML = "";
   if(!filtered.length){
-    container.innerHTML = `<div class="empty-note">مفيش مخدومين بالاسم ده</div>`;
+    container.innerHTML = `<div class="empty-note">لا يوجد مخدومين بهذا الاسم</div>`;
     return;
   }
   filtered.forEach(u=>{
@@ -504,7 +506,7 @@ document.getElementById("customConfirm").onclick = () => {
 };
 
 /* =========================================================
-   5) البرنامج
+   5) البرنامج والتوقيت
    ========================================================= */
 let activeDayId = null;
 let tickHandle = null;
