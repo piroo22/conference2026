@@ -26,7 +26,6 @@ body{
   font-family:var(--font-body);color:var(--text-light);background:var(--night-deep);
   direction:rtl;line-height:1.6;position:relative;overflow-x:hidden;
 }
-/* نجوم الخلفية */
 body::before,body::after{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:
@@ -64,15 +63,15 @@ body::after{
 .user-chip{display:flex;align-items:center;gap:8px;background:var(--night-card);
   border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:.82rem;}
 .user-chip .role-tag{background:var(--ember);color:#28150B;padding:2px 10px;border-radius:999px;font-size:.68rem;font-weight:700;}
-.logout-link{font-size:.76rem;color:var(--text-dim);cursor:pointer;background:none;border:none;
+.logout-link,.forgot-link{font-size:.76rem;color:var(--text-dim);cursor:pointer;background:none;border:none;
   border-bottom:1px dashed var(--text-faint);padding:0;font-family:var(--font-body);}
+.forgot-link{display:block;margin:14px auto 0;text-align:center;width:fit-content;}
 
 .card{background:var(--night-card);border:1px solid var(--line);border-radius:18px;padding:20px;
   box-shadow:var(--shadow);margin-bottom:16px;position:relative;overflow:hidden;}
 .card-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--gold-soft);margin:0 0 3px;}
 .card-sub{font-size:.82rem;color:var(--text-dim);margin:0 0 14px;}
 
-/* شاشة الدخول */
 .auth-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1;}
 .auth-card{width:100%;max-width:400px;background:var(--night-card);border:1px solid var(--line);
   border-radius:22px;padding:30px 24px;box-shadow:var(--shadow);
@@ -86,7 +85,7 @@ body::after{
   background:none;color:var(--text-dim);border:none;font-family:var(--font-body);transition:.2s;}
 .auth-tab.active{background:var(--ember);color:#28150B;}
 label{display:block;font-size:.8rem;font-weight:700;color:var(--gold-soft);margin:13px 0 6px;}
-input[type=text],input[type=password],input[type=number],input[type=tel]{width:100%;padding:12px 14px;border-radius:12px;
+input[type=text],input[type=password],input[type=number],input[type=tel],input[type=email]{width:100%;padding:12px 14px;border-radius:12px;
   border:1px solid var(--line);background:var(--night-deep);font-family:var(--font-body);font-size:.95rem;color:var(--text-light);
   transition:border-color .2s;}
 input::placeholder{color:var(--text-faint);}
@@ -108,20 +107,17 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
   border-radius:10px;font-size:.84rem;margin-top:14px;display:none;}
 .error-box.show{display:block;}
 
-/* تابات علوية (البرنامج - أيام) */
 .day-tabs{display:flex;gap:8px;margin-bottom:16px;}
 .day-tab{flex:1;text-align:center;padding:10px 6px;border-radius:12px;border:1px solid var(--line);
   background:var(--night-deep);cursor:pointer;font-size:.84rem;font-weight:700;color:var(--text-dim);transition:.2s;}
 .day-tab.active{background:var(--gold);color:#28150B;border-color:var(--gold);}
 .day-tab .d-date{display:block;font-size:.68rem;font-weight:500;opacity:.8;margin-top:2px;}
 
-/* الصفحات */
 .tab-panel{display:none;}
 .tab-panel.active{display:block;animation:panelIn .35s ease both;}
 @keyframes panelIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 @media (prefers-reduced-motion: reduce){.tab-panel.active{animation:none;}}
 
-/* بادچ النقط - البطل الرئيسي في التصميم */
 .my-points{display:flex;align-items:center;gap:18px;}
 .points-badge-wrap{position:relative;width:106px;height:106px;flex-shrink:0;}
 .points-badge{width:106px;height:106px;border-radius:50%;
@@ -143,6 +139,9 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .my-rank{font-size:.9rem;color:var(--text-dim);}
 .my-rank b{color:var(--gold);font-family:var(--font-display);font-size:1.05rem;}
 
+.my-code{font-family:var(--font-display);font-size:2rem;letter-spacing:8px;color:var(--gold);
+  text-align:center;background:var(--night-deep);border:1px dashed var(--gold-soft);border-radius:12px;padding:10px;}
+
 .note-box{background:linear-gradient(135deg, rgba(255,122,69,.16), rgba(255,200,87,.1));
   border:1px solid var(--ember); padding:14px 16px;border-radius:16px;font-size:.88rem;margin-bottom:16px;
   position:relative;padding-inline-start:44px;}
@@ -152,7 +151,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .note-edit-row textarea{flex:1 1 100%;min-height:60px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
   font-family:var(--font-body);font-size:.85rem;background:var(--night-deep);color:var(--text-light);resize:vertical;}
 
-.leaderboard{list-style:none;margin:0;padding:0;}
+.leaderboard,.points-log{list-style:none;margin:0;padding:0;}
 .leaderboard li{display:flex;align-items:center;gap:12px;padding:11px 6px;border-bottom:1px dashed var(--line);}
 .leaderboard li:last-child{border-bottom:none;}
 .rank-num{width:28px;height:28px;border-radius:50%;background:var(--night-deep);
@@ -164,10 +163,20 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .lb-name{flex:1;font-weight:700;font-size:.92rem;}
 .lb-points{font-family:var(--font-display);font-weight:700;color:var(--gold);font-size:1.1rem;}
 
+.points-log li{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px dashed var(--line);}
+.points-log li:last-child{border-bottom:none;}
+.pl-amount{font-family:var(--font-display);font-weight:700;color:var(--gold);font-size:1.15rem;min-width:36px;text-align:center;}
+.pl-info{flex:1;min-width:0;}
+.pl-from{font-weight:700;font-size:.88rem;}
+.pl-reason{font-size:.76rem;color:var(--text-dim);}
+.pl-time{font-size:.7rem;color:var(--text-faint);white-space:nowrap;}
+
 .camper-row{display:flex;align-items:center;gap:10px;padding:13px 8px;border-bottom:1px dashed var(--line);flex-wrap:wrap;}
 .camper-row:last-child{border-bottom:none;}
 .camper-name{flex:1 1 140px;font-weight:700;font-size:.94rem;}
 .camper-name small{display:block;font-weight:500;font-size:.72rem;color:var(--text-faint);margin-top:1px;}
+.phone-link{display:inline-block;margin-top:3px;font-size:.74rem;color:var(--gold-soft);text-decoration:none;
+  border-bottom:1px dashed var(--gold-soft);}
 .camper-points{font-family:var(--font-display);color:var(--gold);font-weight:700;min-width:40px;text-align:center;font-size:1.05rem;}
 .quick-btns{display:flex;gap:6px;flex-wrap:wrap;}
 .quick-btn{border:1px solid var(--gold-soft);background:none;color:var(--gold-soft);border-radius:10px;
@@ -181,7 +190,6 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .custom-btn:active{transform:scale(.93);}
 .search-box{margin-bottom:14px;}
 
-/* شريط دلوقتي */
 .now-strip{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--night-card-2),var(--night-card));
   border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:18px;flex-wrap:wrap;}
 .now-strip .now-label{font-size:.72rem;letter-spacing:.5px;color:var(--ember-soft);margin-bottom:3px;
@@ -205,7 +213,6 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 
 footer.page-footer{text-align:center;font-size:.74rem;color:var(--text-faint);margin-top:24px;}
 
-/* التاب السفلي - نمط تطبيقات الموبايل */
 .bottom-nav{position:fixed;bottom:0;inset-inline:0;z-index:40;
   background:rgba(24,37,69,.92);backdrop-filter:blur(10px);
   border-top:1px solid var(--line);display:flex;padding:6px 10px calc(6px + env(safe-area-inset-bottom));}
@@ -239,6 +246,13 @@ footer.page-footer{text-align:center;font-size:.74rem;color:var(--text-faint);ma
       <input type="password" id="loginPassword" required>
       <button type="submit" class="btn gold">دخول</button>
       <div class="error-box" id="loginError"></div>
+      <button type="button" class="forgot-link" id="forgotLink">نسيت كلمة السر؟</button>
+      <div class="hidden" id="forgotBox">
+        <label>اسم المستخدم</label>
+        <input type="text" id="forgotUsername">
+        <button type="button" class="btn ghost" id="forgotSend">ابعتلي لينك إعادة التعيين</button>
+        <div class="hint" id="forgotMsg"></div>
+      </div>
     </form>
 
     <form id="signupForm" class="hidden">
@@ -247,6 +261,9 @@ footer.page-footer{text-align:center;font-size:.74rem;color:var(--text-faint);ma
       <label>اسم المستخدم</label>
       <input type="text" id="signupUsername" required>
       <div class="hint">من غير مسافات — هيبقى اسم الدخول بتاعك</div>
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="signupEmail" required>
+      <div class="hint">علشان تقدر تسترجع كلمة السر لو نسيتها</div>
       <label>رقم التليفون</label>
       <input type="tel" id="signupPhone" placeholder="01xxxxxxxxx" required>
       <label>كلمة السر</label>
@@ -293,6 +310,16 @@ footer.page-footer{text-align:center;font-size:.74rem;color:var(--text-faint);ma
           </div>
           <div class="my-rank">ترتيبك: <b id="myRank">—</b><br>استمر، ربنا يبارك تعبك 🙏</div>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-title">كودك الشخصي</div>
+        <div class="card-sub">قوله للخادم لو محتاج يلاقيك بسرعة</div>
+        <div class="my-code" id="myCodeText">-----</div>
+      </div>
+      <div class="card">
+        <div class="card-title">سجل نقطك</div>
+        <div class="card-sub">مين اداك نقط وليه</div>
+        <ul class="points-log" id="pointsLogList"></ul>
       </div>
       <div class="card">
         <div class="card-title">لوحة الشرف</div>
@@ -365,13 +392,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function usernameToEmail(u){ return u.trim().toLowerCase().replace(/\s+/g,"_") + "@mowit.local"; }
-
 /* كود المخدوم: ٥ أرقام بس، سهل يتكتب ويتقال */
 function generateCamperCode(){
   let code = "";
   for(let i=0;i<5;i++) code += Math.floor(Math.random()*10);
   return code;
+}
+
+/* هات إيميل الحساب الحقيقي بمعرفة اسم المستخدم (لازم Firestore rules تسمح بده) */
+async function getEmailForUsername(username){
+  const snap = await db.collection("users").where("username","==",username.trim()).limit(1).get();
+  if(snap.empty) return null;
+  return snap.docs[0].data().email || null;
 }
 
 /* =========================================================
@@ -421,7 +453,7 @@ const SCHEDULE = [
 ];
 
 /* =========================================================
-   3) تسجيل الدخول / حساب جديد
+   3) تسجيل الدخول / حساب جديد / نسيت الباسورد
    ========================================================= */
 document.getElementById("tabLogin").onclick = () => {
   document.getElementById("tabLogin").classList.add("active");
@@ -452,7 +484,9 @@ document.getElementById("loginForm").addEventListener("submit", async (e)=>{
   const username = document.getElementById("loginUsername").value;
   const password = document.getElementById("loginPassword").value;
   try{
-    await auth.signInWithEmailAndPassword(usernameToEmail(username), password);
+    const email = await getEmailForUsername(username);
+    if(!email) throw new Error("not-found");
+    await auth.signInWithEmailAndPassword(email, password);
   }catch(err){
     errBox.textContent = "اسم المستخدم أو كلمة السر غير صحيحة.";
     errBox.classList.add("show");
@@ -472,22 +506,43 @@ document.getElementById("signupForm").addEventListener("submit", async (e)=>{
   }
   const name = document.getElementById("signupName").value.trim();
   const username = document.getElementById("signupUsername").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
   const phone = document.getElementById("signupPhone").value.trim();
   const password = document.getElementById("signupPassword").value;
   try{
-    const cred = await auth.createUserWithEmailAndPassword(usernameToEmail(username), password);
-    const userData = {
-      username, name, phone, role, points:0, createdAt: Date.now()
-    };
-    if(role === "camper"){
-      userData.camperCode = generateCamperCode();
+    const existing = await db.collection("users").where("username","==",username).limit(1).get();
+    if(!existing.empty){
+      errBox.textContent = "اسم المستخدم ده متسجل قبل كده.";
+      errBox.classList.add("show");
+      return;
     }
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    const userData = { username, name, email, phone, role, points:0, createdAt: Date.now() };
+    if(role === "camper") userData.camperCode = generateCamperCode();
     await db.collection("users").doc(cred.user.uid).set(userData);
   }catch(err){
     errBox.textContent = err.message || "حدث خطأ أثناء إنشاء الحساب.";
     errBox.classList.add("show");
   }
 });
+
+document.getElementById("forgotLink").onclick = () => {
+  document.getElementById("forgotBox").classList.toggle("hidden");
+};
+document.getElementById("forgotSend").onclick = async () => {
+  const msg = document.getElementById("forgotMsg");
+  const username = document.getElementById("forgotUsername").value.trim();
+  if(!username){ msg.textContent = "اكتب اسم المستخدم الأول."; return; }
+  msg.textContent = "بنبحث...";
+  try{
+    const email = await getEmailForUsername(username);
+    if(!email){ msg.textContent = "مفيش حساب بالاسم ده."; return; }
+    await auth.sendPasswordResetEmail(email);
+    msg.textContent = "بعتنالك لينك إعادة تعيين كلمة السر على إيميلك، افتحه من على موبايلك.";
+  }catch(err){
+    msg.textContent = "حصل خطأ، جرب تاني بعد شوية.";
+  }
+};
 
 document.getElementById("logoutBtn").onclick = () => auth.signOut();
 
@@ -496,6 +551,7 @@ document.getElementById("logoutBtn").onclick = () => auth.signOut();
    ========================================================= */
 let me = null;
 let unsubLeaderboard = null;
+let unsubPointsLog = null;
 let lastMyPoints = null;
 
 auth.onAuthStateChanged(async (user)=>{
@@ -504,6 +560,7 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById("dashboardShell").classList.add("hidden");
     document.getElementById("bottomNav").classList.add("hidden");
     if(unsubLeaderboard) unsubLeaderboard();
+    if(unsubPointsLog) unsubPointsLog();
     lastMyPoints = null;
     return;
   }
@@ -519,6 +576,10 @@ auth.onAuthStateChanged(async (user)=>{
   document.getElementById("camperView").classList.toggle("hidden", me.role !== "camper");
   document.getElementById("servantView").classList.toggle("hidden", me.role === "camper");
 
+  if(me.role === "camper"){
+    document.getElementById("myCodeText").textContent = me.camperCode || "—";
+    startPointsLog();
+  }
   startLeaderboard();
 });
 
@@ -541,6 +602,42 @@ function startLeaderboard(){
       if(me.role === "camper") renderLeaderboardReadOnly(list);
       else renderServantList(list);
     });
+}
+
+/* سجل النقط الخاص بالمخدوم: مين اداه نقط وليه وامتى */
+function startPointsLog(){
+  if(unsubPointsLog) unsubPointsLog();
+  unsubPointsLog = db.collection("pointsLog").where("toUid","==",me.id)
+    .orderBy("timestamp","desc").limit(15)
+    .onSnapshot(snap=>{
+      const list = [];
+      snap.forEach(d=>list.push(d.data()));
+      renderPointsLog(list);
+    }, err=>{
+      console.error("pointsLog error (يمكن محتاج Index في Firestore):", err);
+    });
+}
+
+function formatLogTime(d){
+  return d.toLocaleString("ar-EG", {hour:"2-digit", minute:"2-digit", day:"numeric", month:"numeric"});
+}
+
+function renderPointsLog(list){
+  const ul = document.getElementById("pointsLogList");
+  ul.innerHTML = "";
+  if(!list.length){
+    ul.innerHTML = `<div class="empty-note">لسه معملتش نقط</div>`;
+    return;
+  }
+  list.forEach(entry=>{
+    const li = document.createElement("li");
+    const timeStr = (entry.timestamp && entry.timestamp.toDate) ? formatLogTime(entry.timestamp.toDate()) : "";
+    li.innerHTML = `<div class="pl-amount">+${entry.amount}</div>
+      <div class="pl-info"><div class="pl-from">${entry.fromName}</div>
+      <div class="pl-reason">${entry.reason || "—"}</div></div>
+      <div class="pl-time">${timeStr}</div>`;
+    ul.appendChild(li);
+  });
 }
 
 /* عد تصاعدي بسيط لأي رقم */
@@ -582,7 +679,7 @@ function renderLeaderboardReadOnly(list){
 
   const el = document.getElementById("myPoints");
   if(lastMyPoints === null){
-    el.textContent = newPoints; // أول تحميل: بدون أنيميشن
+    el.textContent = newPoints;
   }else if(newPoints !== lastMyPoints){
     animateNumber(el, lastMyPoints, newPoints);
     if(newPoints > lastMyPoints) spawnConfetti();
@@ -632,7 +729,9 @@ function applyFilterAndRender(){
     const row = document.createElement("div");
     row.className = "camper-row";
     row.innerHTML = `
-      <div class="camper-name">${u.name}<small>${u.camperCode ? "كود: " + u.camperCode : ""}</small></div>
+      <div class="camper-name">${u.name}<small>${u.camperCode ? "كود: " + u.camperCode : ""}</small>
+        ${u.phone ? `<a class="phone-link" href="tel:${u.phone}">📞 ${u.phone}</a>` : ""}
+      </div>
       <div class="camper-points">${u.points ?? 0}</div>
       <div class="quick-btns">
         <button class="quick-btn" data-amt="1">+1</button>
