@@ -1,428 +1,597 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام غرف المؤتمر</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #0b0c2e; min-height: 100vh; display: flex; justify-content: center; padding: 30px; color: #fff; }
-        .app { max-width: 900px; width: 100%; }
-        .card { background: rgba(255,255,255,0.07); backdrop-filter: blur(12px); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        h2 { margin-bottom: 20px; font-weight: 300; color: #c4b5fd; border-right: 4px solid #a78bfa; padding-right: 15px; }
-        .flex-row { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
-        .flex-row input, .flex-row select { flex: 1; min-width: 150px; }
-        input, select, button { padding: 14px 18px; border: none; border-radius: 60px; background: rgba(255,255,255,0.06); color: #fff; font-size: 15px; outline: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-        input:focus, select:focus { outline: 2px solid #a78bfa; background: rgba(255,255,255,0.12); }
-        button { background: linear-gradient(135deg, #7c3aed, #a78bfa); font-weight: bold; cursor: pointer; }
-        button:hover { transform: scale(1.02); box-shadow: 0 8px 25px #7c3aed80; }
-        .btn-danger { background: #ef4444; }
-        .btn-outline { background: transparent; border: 1px solid #a78bfa; }
-        .hidden { display: none !important; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ⲙⲱⲓⲧ — أبطال الايمان ٢٠٢٦</title>
 
-        /* Avatar & User Row */
-        .user-row { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.04); padding: 12px 18px; border-radius: 60px; margin-bottom: 10px; border-right: 3px solid #a78bfa; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #a78bfa); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #fff; flex-shrink: 0; }
-        .user-info { flex: 1; }
-        .user-info .name { font-weight: bold; font-size: 18px; }
-        .user-info .sub { font-size: 13px; color: #9ca3af; }
-        .badge-role { padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: bold; }
-        .badge-server { background: #f59e0b; color: #1e1b2e; }
-        .badge-client { background: #34d399; color: #1e1b2e; }
-        .points-control { display: flex; gap: 8px; align-items: center; }
-        .points-control button { width: 40px; height: 40px; padding: 0; border-radius: 50%; font-size: 20px; background: #374151; }
-        .points-control button.plus { background: #22c55e; }
-        .points-control button.minus { background: #ef4444; }
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-        /* Rooms Grid */
-        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .room-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .room-card .num { font-size: 28px; font-weight: bold; color: #a78bfa; }
-        .room-card .count { font-size: 14px; color: #9ca3af; }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;700&family=Cairo:wght@400;600;700;800&display=swap');
 
-        /* Stats table */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .stat-item { background: rgba(255,255,255,0.04); padding: 15px; border-radius: 16px; text-align: center; }
-        .stat-item .val { font-size: 28px; font-weight: bold; color: #fcd34d; }
-        .stat-item .lbl { font-size: 13px; color: #9ca3af; }
-
-        .alert-box { background: #f43f5e; padding: 12px; border-radius: 30px; margin: 10px 0; text-align: center; animation: fade 0.5s; }
-        @keyframes fade { from { opacity:0; transform:translateY(-10px); } to { opacity:1; } }
-        .small-text { font-size: 13px; color: #9ca3af; }
-        hr { margin: 20px 0; border-color: rgba(255,255,255,0.05); }
-    </style>
+:root{
+  --parchment:#EFE6D3; --parchment-dark:#E2D4B4; --ink:#2B2A24;
+  --green-deep:#29473A; --green-mid:#3E6A54; --gold:#B8873F; --gold-light:#D8B36A;
+  --clay:#A9522F; --line:rgba(43,42,36,.14); --shadow:0 10px 24px rgba(43,42,36,.16);
+  --font-display:'Markazi Text',serif; --font-body:'Cairo',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;min-height:100%;}
+body{font-family:var(--font-body);color:var(--ink);background:var(--parchment);
+  background-image:radial-gradient(circle at 15% 20%,rgba(184,135,63,.07) 0,transparent 40%),
+  radial-gradient(circle at 85% 80%,rgba(41,71,58,.08) 0,transparent 45%);
+  direction:rtl;line-height:1.6;}
+.hidden{display:none !important;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 18px 64px;}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 0 20px;border-bottom:1px solid var(--line);margin-bottom:26px;}
+.brand-title{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:var(--green-deep);}
+.brand-title small{display:block;font-family:var(--font-body);font-size:.78rem;font-weight:600;color:var(--clay);letter-spacing:1px;}
+.user-chip{display:flex;align-items:center;gap:10px;background:var(--parchment-dark);
+  border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-size:.88rem;}
+.user-chip .role-tag{background:var(--green-deep);color:var(--parchment);padding:2px 10px;border-radius:999px;font-size:.72rem;}
+.logout-link{font-size:.8rem;color:var(--clay);cursor:pointer;background:none;border:none;
+  border-bottom:1px dashed var(--clay);padding:0;font-family:var(--font-body);}
+.card{background:#FAF5E8;border:1px solid var(--line);border-radius:14px;padding:22px;
+  box-shadow:var(--shadow);margin-bottom:20px;}
+.card-title{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--green-deep);margin:0 0 4px;}
+.card-sub{font-size:.85rem;color:#6b6858;margin:0 0 16px;}
+.auth-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-card{width:100%;max-width:420px;background:#FAF5E8;border:1px solid var(--line);
+  border-radius:18px;padding:32px 28px;box-shadow:var(--shadow);}
+.auth-title{text-align:center;font-family:var(--font-display);font-size:2.1rem;font-weight:700;color:var(--green-deep);margin:0;}
+.auth-title small{display:block;font-family:var(--font-body);font-size:.8rem;font-weight:600;letter-spacing:2px;color:var(--clay);}
+.auth-tabs{display:flex;margin:22px 0 18px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.auth-tab{flex:1;text-align:center;padding:10px;font-size:.9rem;font-weight:600;cursor:pointer;
+  background:var(--parchment-dark);color:#6b6858;border:none;font-family:var(--font-body);}
+.auth-tab.active{background:var(--green-deep);color:var(--parchment);}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--green-deep);margin:12px 0 5px;}
+input[type=text],input[type=password],input[type=number]{width:100%;padding:11px 13px;border-radius:10px;
+  border:1px solid var(--line);background:#fff;font-family:var(--font-body);font-size:.95rem;color:var(--ink);}
+input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.role-picker{display:flex;gap:10px;margin-top:6px;}
+.role-option{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;
+  cursor:pointer;font-size:.85rem;font-weight:600;color:var(--green-mid);background:#fff;}
+.role-option.selected{border-color:var(--green-deep);background:var(--green-deep);color:var(--parchment);}
+.hint{font-size:.76rem;color:#7a7768;margin-top:4px;}
+.btn{display:inline-block;width:100%;text-align:center;padding:12px;margin-top:18px;border-radius:10px;
+  border:none;background:var(--green-deep);color:var(--parchment);font-family:var(--font-body);
+  font-weight:700;font-size:.95rem;cursor:pointer;}
+.btn:hover{background:var(--green-mid);}
+.btn.ghost{background:transparent;border:1px solid var(--green-deep);color:var(--green-deep);}
+.btn.gold{background:var(--gold);color:#2B2205;}
+.btn.gold:hover{background:var(--gold-light);}
+.error-box{background:#F4DFD6;border:1px solid var(--clay);color:#6B2E15;padding:10px 12px;
+  border-radius:8px;font-size:.84rem;margin-top:14px;display:none;}
+.error-box.show{display:block;}
+.nav-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.nav-tab{padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:var(--parchment-dark);
+  font-size:.86rem;font-weight:600;color:var(--green-mid);cursor:pointer;font-family:var(--font-body);}
+.nav-tab.active{background:var(--green-deep);border-color:var(--green-deep);color:var(--parchment);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.my-points{display:flex;align-items:center;gap:18px;}
+.points-badge{width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--gold) 0deg,var(--gold-light) 360deg);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:inset 0 0 0 4px #FAF5E8,0 0 0 2px var(--gold);}
+.points-badge span{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--green-deep);}
+.my-rank{font-size:.9rem;color:#4d4a3f;}
+.my-rank b{color:var(--clay);}
+.leaderboard{list-style:none;margin:0;padding:0;}
+.leaderboard li{display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:1px dashed var(--line);}
+.leaderboard li:last-child{border-bottom:none;}
+.rank-num{width:26px;height:26px;border-radius:50%;background:var(--parchment-dark);
+  display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;
+  color:var(--green-deep);flex-shrink:0;}
+.leaderboard li:nth-child(1) .rank-num{background:var(--gold);color:#2B2205;}
+.leaderboard li:nth-child(2) .rank-num{background:#C9C3AE;color:#2B2205;}
+.leaderboard li:nth-child(3) .rank-num{background:#C79A6B;color:#2B2205;}
+.lb-name{flex:1;font-weight:600;font-size:.92rem;}
+.lb-points{font-family:var(--font-display);font-weight:700;color:var(--clay);font-size:1.05rem;}
+.camper-row{display:flex;align-items:center;gap:10px;padding:12px 8px;border-bottom:1px dashed var(--line);flex-wrap:wrap;}
+.camper-row:last-child{border-bottom:none;}
+.camper-name{flex:1 1 140px;font-weight:700;font-size:.94rem;}
+.camper-points{font-family:var(--font-display);color:var(--clay);font-weight:700;min-width:46px;text-align:center;}
+.quick-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.quick-btn{border:1px solid var(--green-deep);background:#fff;color:var(--green-deep);border-radius:8px;
+  padding:5px 10px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font-body);}
+.quick-btn:hover{background:var(--green-deep);color:var(--parchment);}
+.quick-btn.joy{border-color:var(--gold);color:var(--gold);}
+.quick-btn.joy:hover{background:var(--gold);color:#2B2205;}
+.custom-btn{border:1px dashed var(--clay);color:var(--clay);background:none;border-radius:8px;
+  padding:5px 10px;font-size:.78rem;cursor:pointer;font-family:var(--font-body);}
+.search-box{margin-bottom:14px;}
+.day-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.day-tab{flex:1;text-align:center;padding:10px 6px;border-radius:10px;border:1px solid var(--line);
+  background:var(--parchment-dark);cursor:pointer;font-size:.84rem;font-weight:700;color:var(--green-mid);}
+.day-tab.active{background:var(--green-deep);color:var(--parchment);border-color:var(--green-deep);}
+.day-tab .d-date{display:block;font-size:.7rem;font-weight:500;opacity:.8;}
+.now-strip{display:flex;align-items:center;gap:14px;background:var(--green-deep);color:var(--parchment);
+  border-radius:12px;padding:16px 18px;margin-bottom:18px;flex-wrap:wrap;}
+.now-strip .now-label{font-size:.74rem;letter-spacing:1px;color:var(--gold-light);margin-bottom:2px;}
+.now-strip .now-activity{font-family:var(--font-display);font-size:1.5rem;font-weight:700;}
+.now-strip .now-countdown{margin-inline-start:auto;text-align:left;font-size:.82rem;}
+.now-strip .now-countdown b{font-family:var(--font-display);font-size:1.2rem;display:block;}
+.timeline{position:relative;padding-inline-start:26px;border-inline-start:3px dashed var(--gold);}
+.timeline-item{position:relative;padding:8px 0 8px 4px;}
+.timeline-item::before{content:"";position:absolute;inline-size:14px;block-size:14px;border-radius:50%;
+  background:var(--parchment-dark);border:2px solid var(--gold);inset-inline-start:-33px;top:12px;}
+.timeline-item.current::before{background:var(--clay);border-color:var(--clay);}
+.timeline-item.current{background:rgba(184,135,63,.12);border-radius:10px;}
+.timeline-item.past{opacity:.5;}
+.ti-time{font-size:.78rem;color:var(--clay);font-weight:700;}
+.ti-title{font-weight:700;font-size:.98rem;}
+.empty-note{font-size:.85rem;color:#7a7768;text-align:center;padding:20px 0;}
+footer.page-footer{text-align:center;font-size:.76rem;color:#8a8776;margin-top:30px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(43,42,36,.55);align-items:center;justify-content:center;z-index:50;}
+.modal-bg.show{display:flex;}
+@media (max-width:480px){
+  .brand{flex-direction:column;align-items:flex-start;gap:10px;}
+  .now-strip .now-countdown{margin-inline-start:0;text-align:right;}
+}
+</style>
 </head>
 <body>
-<div class="app" id="app">
 
-    <!-- ========== صفحة تسجيل الدخول ========== -->
-    <div id="loginPage" class="card">
-        <h2>🔐 دخول المؤتمر</h2>
-        <div class="flex-row">
-            <select id="roleSelect">
-                <option value="server">🧑‍💼 خادم (مشرف غرفة)</option>
-                <option value="client">🧑‍🎓 مخدوم (حاجز)</option>
-            </select>
-            <input type="text" id="fullName" placeholder="الاسم الثلاثي (مثال: أحمد محمد علي)" />
-            <input type="tel" id="userPhone" placeholder="رقم التليفون" />
-        </div>
-        <div class="flex-row">
-            <input type="number" id="roomNumber" placeholder="رقم الغرفة (1-5)" min="1" max="5" />
-            <button onclick="signIn()">دخول / تسجيل</button>
-        </div>
-        <p id="loginError" class="small-text" style="color:#f87171;"></p>
+<!-- ============ شاشة الدخول ============ -->
+<div class="auth-shell" id="authShell">
+  <div class="auth-card">
+    <h1 class="auth-title">ⲙⲱⲓⲧ<small>مؤتمر أبطال الايمان ٢٠٢٦</small></h1>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" type="button">تسجيل الدخول</button>
+      <button class="auth-tab" id="tabSignup" type="button">حساب جديد</button>
     </div>
 
-    <!-- ========== صفحة الخادم ========== -->
-    <div id="serverPage" class="hidden">
-        <div class="card">
-            <div class="flex-row" style="justify-content:space-between;">
-                <div class="user-row" style="background:transparent; padding:0; border:0;">
-                    <div class="avatar" id="serverAvatar">خ</div>
-                    <div><div class="name" id="serverName">---</div><div class="sub">🛡️ خادم الغرفة <span id="serverRoomNum">0</span></div></div>
-                </div>
-                <button onclick="logout()" class="btn-danger" style="padding:8px 20px;">🚪 خروج</button>
-            </div>
-        </div>
+    <form id="loginForm">
+      <label>اسم المستخدم</label>
+      <input type="text" id="loginUsername" required>
+      <label>كلمة السر</label>
+      <input type="password" id="loginPassword" required>
+      <button type="submit" class="btn gold">دخول</button>
+      <div class="error-box" id="loginError"></div>
+    </form>
 
-        <!-- لوحة الغرف -->
-        <div class="card">
-            <h2>🏠 الغرف المتاحة</h2>
-            <div class="rooms-grid" id="roomsContainer"></div>
-        </div>
+    <form id="signupForm" class="hidden">
+      <label>الاسم</label>
+      <input type="text" id="signupName" required>
+      <label>اسم المستخدم</label>
+      <input type="text" id="signupUsername" required>
+      <div class="hint">من غير مسافات — هيبقى اسم الدخول بتاعك</div>
+      <label>كلمة السر</label>
+      <input type="password" id="signupPassword" required minlength="6">
+      <label>أنا</label>
+      <div class="role-picker">
+        <div class="role-option selected" data-role="camper">مخدوم</div>
+        <div class="role-option" data-role="servant">خادم</div>
+      </div>
+      <input type="hidden" id="signupRole" value="camper">
+      <div id="servantCodeWrap" class="hidden">
+        <label>كود الخادم</label>
+        <input type="text" id="servantCode">
+        <div class="hint">اسأل مسؤول المؤتمر عن الكود</div>
+      </div>
+      <button type="submit" class="btn gold">إنشاء الحساب</button>
+      <div class="error-box" id="signupError"></div>
+    </form>
+  </div>
+</div>
 
-        <!-- قائمة المخدومين في غرفتي -->
-        <div class="card">
-            <h2>👥 مخدومي غرفتي (العدد: <span id="clientCount">0</span>)</h2>
-            <div id="clientsList"></div>
-        </div>
+<!-- ============ الداشبورد ============ -->
+<div class="wrap hidden" id="dashboardShell">
+  <div class="brand">
+    <div class="brand-title">ⲙⲱⲓⲧ<small>أبطال الايمان ٢٠٢٦</small></div>
+    <div class="user-chip">
+      <span id="userName">...</span>
+      <span class="role-tag" id="userRole">...</span>
+      <button class="logout-link" id="logoutBtn" type="button">خروج</button>
+    </div>
+  </div>
 
-        <!-- إحصائيات -->
-        <div class="card">
-            <h2>📊 إحصائيات النقاط</h2>
-            <div class="stats-grid" id="statsContainer">
-                <div class="stat-item"><div class="val" id="statTotal">0</div><div class="lbl">إجمالي النقاط</div></div>
-                <div class="stat-item"><div class="val" id="statAvg">0</div><div class="lbl">المتوسط</div></div>
-                <div class="stat-item"><div class="val" id="statMax">0</div><div class="lbl">أعلى نقطة</div></div>
-            </div>
-            <div style="margin-top:10px; font-size:14px; color:#9ca3af;" id="statPercentage">نسبة التقدم: 0%</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="home" type="button">النقاط</button>
+    <button class="nav-tab" data-tab="schedule" type="button">البرنامج</button>
+  </div>
+
+  <div class="tab-panel active" id="panel-home">
+    <div id="camperView" class="hidden">
+      <div class="card">
+        <div class="my-points">
+          <div class="points-badge"><span id="myPoints">0</span></div>
+          <div class="my-rank">ترتيبك: <b id="myRank">—</b><br>استمر، ربنا يبارك تعبك 🙏</div>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-title">لوحة الشرف</div>
+        <div class="card-sub">أكتر المخدومين نقط</div>
+        <ul class="leaderboard" id="leaderboardList"></ul>
+      </div>
     </div>
 
-    <!-- ========== صفحة المخدوم ========== -->
-    <div id="clientPage" class="hidden">
-        <div class="card">
-            <div class="flex-row" style="justify-content:space-between;">
-                <div class="user-row" style="background:transparent; padding:0; border:0;">
-                    <div class="avatar" id="clientAvatar">م</div>
-                    <div><div class="name" id="clientName">---</div><div class="sub">🚪 غرفة <span id="clientRoomNum">0</span> • ⭐ نقاط: <strong id="clientPoints">0</strong></div></div>
-                </div>
-                <button onclick="logout()" class="btn-danger" style="padding:8px 20px;">🚪 خروج</button>
-            </div>
-            <div id="clientNotification" class="hidden alert-box">🔔 لديك إشعار جديد!</div>
-            <div id="clientHistory" style="margin-top:15px; background:rgba(255,255,255,0.03); padding:15px; border-radius:20px;">
-                <span class="small-text">📝 آخر تحديث: <span id="lastUpdateBy">لا يوجد</span></span>
-            </div>
-        </div>
-        <!-- عرض بسيط للغرفة التي فيها -->
-        <div class="card">
-            <h2>👥 أعضاء غرفتي</h2>
-            <div id="clientRoomMembers"></div>
-        </div>
+    <div id="servantView" class="hidden">
+      <div class="card">
+        <div class="card-title">لوحة الشرف</div>
+        <div class="card-sub">وزّع نقط على المخدومين</div>
+        <input type="text" class="search-box" id="searchCamper" placeholder="دور على اسم...">
+        <div id="camperList"></div>
+      </div>
     </div>
+  </div>
 
+  <div class="tab-panel" id="panel-schedule">
+    <div class="card">
+      <div class="day-tabs" id="dayTabs"></div>
+      <div class="now-strip" id="nowStrip"></div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </div>
+
+  <footer class="page-footer">كنيسة السيدة العذراء و البابا كيرلس السادس باغاخان — بيت البستان</footer>
+</div>
+
+<div class="modal-bg" id="customModal">
+  <div class="auth-card" style="max-width:360px;">
+    <div class="card-title" id="customModalName">إضافة نقط</div>
+    <label>عدد النقط</label>
+    <input type="number" id="customAmount" value="5">
+    <label>السبب (اختياري)</label>
+    <input type="text" id="customReason" placeholder="مثلاً: مشاركة في السؤال">
+    <button class="btn gold" id="customConfirm" type="button">إضافة</button>
+    <button class="btn ghost" id="customCancel" type="button">إلغاء</button>
+  </div>
 </div>
 
 <script>
-    // ===== إعدادات Firebase (ضع بيانات مشروعك هنا) =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyDemoKey_123456789",
-        authDomain: "your-project.firebaseapp.com",
-        projectId: "your-project",
-        storageBucket: "your-project.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+/* =========================================================
+   1) إعدادات Firebase — غيّر القيم دي ببيانات مشروعك
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const SERVANT_CODE = "MOWIT2026"; // كود سري للخدام بس، غيّره براحتك
 
-    // ===== متغيرات عامة =====
-    let currentUser = null; // { uid, name, phone, role, roomNumber, points }
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-    // ===== دوال مساعدة =====
-    function getAvatarChar(name) {
-        if (!name) return '👤';
-        const parts = name.trim().split(' ');
-        if (parts.length >= 3) return parts[0][0] + parts[1][0];
-        return name[0] || '👤';
-    }
+function usernameToEmail(u){ return u.trim().toLowerCase().replace(/\s+/g,"_") + "@mowit.local"; }
 
-    // ===== تسجيل الدخول =====
-    window.signIn = async function() {
-        const name = document.getElementById('fullName').value.trim();
-        const phone = document.getElementById('userPhone').value.trim();
-        const role = document.getElementById('roleSelect').value;
-        const room = parseInt(document.getElementById('roomNumber').value);
-        const err = document.getElementById('loginError');
+/* =========================================================
+   2) جدول البرنامج (من بوستر المؤتمر)
+   ========================================================= */
+const SCHEDULE = [
+  { id:"thu", label:"الخميس", dateLabel:"٣ / ٩ / ٢٠٢٦", items:[
+    {date:"2026-09-03",time:"07:00",title:"ساعتين فى السماء"},
+    {date:"2026-09-03",time:"09:30",title:"تحرك"},
+    {date:"2026-09-03",time:"11:00",title:"فين اوضتى؟"},
+    {date:"2026-09-03",time:"12:00",title:"ال..... الأول"},
+    {date:"2026-09-03",time:"13:00",title:"الدنيا حررر"},
+    {date:"2026-09-03",time:"15:00",title:"الاكل للجميع"},
+    {date:"2026-09-03",time:"16:00",title:"راحة"},
+    {date:"2026-09-03",time:"17:30",title:"ما احلى ساعة الصلاة"},
+    {date:"2026-09-03",time:"18:00",title:"ال....... التانية"},
+    {date:"2026-09-03",time:"19:00",title:"هوس ايروف"},
+    {date:"2026-09-03",time:"20:00",title:"CR7"},
+    {date:"2026-09-03",time:"21:30",title:"عشاء"},
+    {date:"2026-09-03",time:"22:30",title:"دور معايا"},
+    {date:"2026-09-04",time:"01:00",title:"تصبحوا على خير"}
+  ]},
+  { id:"fri", label:"الجمعة", dateLabel:"٤ / ٩ / ٢٠٢٦", items:[
+    {date:"2026-09-04",time:"07:00",title:"ساعتين فى السماء"},
+    {date:"2026-09-04",time:"09:00",title:"عالسفرة"},
+    {date:"2026-09-04",time:"10:00",title:"ال...... التالتة"},
+    {date:"2026-09-04",time:"11:00",title:"براحتك"},
+    {date:"2026-09-04",time:"13:00",title:"الدنيا حررر"},
+    {date:"2026-09-04",time:"15:00",title:"الاكل للجميع"},
+    {date:"2026-09-04",time:"16:00",title:"راحة"},
+    {date:"2026-09-04",time:"17:30",title:"ما احلى ساعة الصلاة"},
+    {date:"2026-09-04",time:"18:00",title:"ال.... الرابعة"},
+    {date:"2026-09-04",time:"19:00",title:"هوس ايروف"},
+    {date:"2026-09-04",time:"20:00",title:"Messi"},
+    {date:"2026-09-04",time:"21:30",title:"عشاء"},
+    {date:"2026-09-04",time:"22:00",title:"سهرة"},
+    {date:"2026-09-05",time:"02:00",title:"تصبحوا على خير"}
+  ]},
+  { id:"sat", label:"السبت", dateLabel:"٥ / ٩ / ٢٠٢٦", items:[
+    {date:"2026-09-05",time:"07:00",title:"صباح الخير"},
+    {date:"2026-09-05",time:"07:00",title:"يالا نلم الشنط"},
+    {date:"2026-09-05",time:"08:00",title:"عالسفرة"},
+    {date:"2026-09-05",time:"09:00",title:"يالا عالدير"},
+    {date:"2026-09-05",time:"15:00",title:"يالا نمشي"},
+    {date:"2026-09-05",time:"18:00",title:"حمدلله ع السلامة"}
+  ]}
+];
 
-        if (!name || !phone || !room) { err.innerText = '❗ املأ جميع الحقول'; return; }
-        if (room < 1 || room > 5) { err.innerText = '❗ رقم الغرفة من 1 إلى 5'; return; }
+/* =========================================================
+   3) تسجيل الدخول / حساب جديد
+   ========================================================= */
+document.getElementById("tabLogin").onclick = () => {
+  document.getElementById("tabLogin").classList.add("active");
+  document.getElementById("tabSignup").classList.remove("active");
+  document.getElementById("loginForm").classList.remove("hidden");
+  document.getElementById("signupForm").classList.add("hidden");
+};
+document.getElementById("tabSignup").onclick = () => {
+  document.getElementById("tabSignup").classList.add("active");
+  document.getElementById("tabLogin").classList.remove("active");
+  document.getElementById("signupForm").classList.remove("hidden");
+  document.getElementById("loginForm").classList.add("hidden");
+};
 
-        try {
-            const cred = await auth.signInAnonymously();
-            const uid = cred.user.uid;
+document.querySelectorAll(".role-option").forEach(opt=>{
+  opt.onclick = () => {
+    document.querySelectorAll(".role-option").forEach(o=>o.classList.remove("selected"));
+    opt.classList.add("selected");
+    document.getElementById("signupRole").value = opt.dataset.role;
+    document.getElementById("servantCodeWrap").classList.toggle("hidden", opt.dataset.role !== "servant");
+  };
+});
 
-            const userRef = db.collection('users').doc(uid);
-            await userRef.set({ name, phone, role, roomNumber: room, points: 0 }, { merge: true });
+document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const errBox = document.getElementById("loginError");
+  errBox.classList.remove("show");
+  const username = document.getElementById("loginUsername").value;
+  const password = document.getElementById("loginPassword").value;
+  try{
+    await auth.signInWithEmailAndPassword(usernameToEmail(username), password);
+  }catch(err){
+    errBox.textContent = "اسم المستخدم أو كلمة السر غلط.";
+    errBox.classList.add("show");
+  }
+});
 
-            // --- إدارة الغرف (Firestore) ---
-            const roomRef = db.collection('rooms').doc(String(room));
-            const roomDoc = await roomRef.get();
-            let members = [];
-            let serverId = null;
-
-            if (roomDoc.exists) {
-                const data = roomDoc.data();
-                members = data.members || [];
-                serverId = data.serverId || null;
-            }
-
-            if (role === 'server') {
-                // لو خادم: يشترط ألا يكون للغرفة خادم بالفعل
-                if (serverId && serverId !== uid) {
-                    err.innerText = '❌ هذه الغرفة لها خادم بالفعل! اختر غرفة أخرى.';
-                    return;
-                }
-                await roomRef.set({ serverId: uid, members: members }, { merge: true });
-            } else { // client
-                if (members.length >= 5) {
-                    err.innerText = '❌ الغرفة ممتلئة (5 أشخاص)! اختر غرفة أخرى.';
-                    return;
-                }
-                if (!members.includes(uid)) members.push(uid);
-                await roomRef.set({ serverId: serverId, members: members }, { merge: true });
-            }
-
-            // جلب البيانات المحدثة
-            const doc = await userRef.get();
-            currentUser = { uid, ...doc.data() };
-            err.innerText = '';
-
-            if (role === 'server') showServerPage();
-            else showClientPage();
-
-        } catch (e) {
-            err.innerText = '❌ خطأ: ' + e.message;
-        }
-    };
-
-    // ===== عرض صفحات =====
-    function showServerPage() {
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('serverPage').classList.remove('hidden');
-        document.getElementById('clientPage').classList.add('hidden');
-
-        document.getElementById('serverName').innerText = currentUser.name;
-        document.getElementById('serverAvatar').innerText = getAvatarChar(currentUser.name);
-        document.getElementById('serverRoomNum').innerText = currentUser.roomNumber;
-
-        loadRooms();
-        loadClients();
-        loadStats();
-    }
-
-    function showClientPage() {
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('clientPage').classList.remove('hidden');
-        document.getElementById('serverPage').classList.add('hidden');
-
-        document.getElementById('clientName').innerText = currentUser.name;
-        document.getElementById('clientAvatar').innerText = getAvatarChar(currentUser.name);
-        document.getElementById('clientRoomNum').innerText = currentUser.roomNumber;
-        document.getElementById('clientPoints').innerText = currentUser.points || 0;
-
-        // إشعار
-        document.getElementById('clientNotification').classList.remove('hidden');
-        setTimeout(() => document.getElementById('clientNotification').classList.add('hidden'), 5000);
-
-        loadClientRoomMembers();
-        loadClientHistory();
-    }
-
-    // ===== تحميل الغرف للخادم =====
-    async function loadRooms() {
-        const container = document.getElementById('roomsContainer');
-        container.innerHTML = 'جار التحميل...';
-        try {
-            const snap = await db.collection('rooms').get();
-            let html = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                const members = data.members || [];
-                const serverId = data.serverId || 'لا يوجد';
-                html += `<div class="room-card">
-                    <div class="num">🚪 ${doc.id}</div>
-                    <div>👥 ${members.length}/5</div>
-                    <div class="small-text">خادم: ${serverId === currentUser.uid ? 'أنت' : (serverId ? 'موجود' : 'متاح')}</div>
-                </div>`;
-            });
-            container.innerHTML = html || 'لا توجد غرف';
-        } catch (e) { container.innerHTML = 'خطأ في التحميل'; }
-    }
-
-    // ===== تحميل المخدومين في غرفة الخادم =====
-    async function loadClients() {
-        const list = document.getElementById('clientsList');
-        const countSpan = document.getElementById('clientCount');
-        try {
-            const roomDoc = await db.collection('rooms').doc(String(currentUser.roomNumber)).get();
-            const members = roomDoc.exists ? (roomDoc.data().members || []) : [];
-            countSpan.innerText = members.length;
-
-            if (members.length === 0) { list.innerHTML = '<div class="small-text">لا يوجد مخدومين بعد</div>'; return; }
-
-            let html = '';
-            for (const uid of members) {
-                const userSnap = await db.collection('users').doc(uid).get();
-                if (!userSnap.exists) continue;
-                const data = userSnap.data();
-                html += `
-                    <div class="user-row">
-                        <div class="avatar">${getAvatarChar(data.name)}</div>
-                        <div class="user-info">
-                            <div class="name">${data.name}</div>
-                            <div class="sub">📞 ${data.phone} • نقاط: ${data.points || 0}</div>
-                        </div>
-                        <div class="points-control">
-                            <button class="plus" onclick="updatePoint('${uid}', 1)">+</button>
-                            <button class="minus" onclick="updatePoint('${uid}', -1)">-</button>
-                        </div>
-                    </div>
-                `;
-            }
-            list.innerHTML = html;
-        } catch (e) { list.innerHTML = 'خطأ: ' + e.message; }
-    }
-
-    // ===== تحديث النقاط (خادم) =====
-    window.updatePoint = async function(clientUid, delta) {
-        if (!currentUser || currentUser.role !== 'server') return;
-        try {
-            const userRef = db.collection('users').doc(clientUid);
-            const doc = await userRef.get();
-            if (!doc.exists) return;
-            const currentPoints = doc.data().points || 0;
-            const newPoints = currentPoints + delta;
-            await userRef.update({ points: newPoints });
-
-            // تسجيل الإشعار (مين عمل التحديث)
-            await db.collection('notifications').add({
-                userId: clientUid,
-                message: `🔄 تم ${delta > 0 ? 'إضافة' : 'خصم'} ${Math.abs(delta)} نقطة بواسطة ${currentUser.name}`,
-                performer: currentUser.name,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                read: false
-            });
-
-            // تحديث واجهة الخادم (القائمة)
-            loadClients();
-            loadStats();
-            // لو المخدوم هو نفسه فتحت صفحته (نادر) هنحدثها لو هو
-            if (clientUid === currentUser.uid) {
-                currentUser.points = newPoints;
-                document.getElementById('clientPoints').innerText = newPoints;
-            }
-        } catch (e) { alert('خطأ: ' + e.message); }
-    };
-
-    // ===== الإحصائيات =====
-    async function loadStats() {
-        try {
-            const snap = await db.collection('users').where('role', '==', 'client').get();
-            let points = [];
-            snap.forEach(d => points.push(d.data().points || 0));
-            const total = points.reduce((a,b) => a+b, 0);
-            const avg = points.length ? (total / points.length).toFixed(1) : 0;
-            const max = points.length ? Math.max(...points) : 0;
-
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statAvg').innerText = avg;
-            document.getElementById('statMax').innerText = max;
-
-            // نسبة (لو افترضنا أن الهدف 100 نقطة مثلاً)
-            const maxPossible = 100;
-            const pct = Math.min(100, ((total / (points.length || 1)) / maxPossible) * 100).toFixed(0);
-            document.getElementById('statPercentage').innerHTML = `📈 نسبة التقدم (متوسط النقاط إلى 100): ${pct}%`;
-        } catch (e) { console.error(e); }
-    }
-
-    // ===== للمخدوم: عرض أعضاء غرفته =====
-    async function loadClientRoomMembers() {
-        const container = document.getElementById('clientRoomMembers');
-        try {
-            const roomDoc = await db.collection('rooms').doc(String(currentUser.roomNumber)).get();
-            const members = roomDoc.exists ? (roomDoc.data().members || []) : [];
-            if (members.length === 0) { container.innerHTML = '<div class="small-text">لا يوجد أعضاء</div>'; return; }
-            let html = '';
-            for (const uid of members) {
-                const snap = await db.collection('users').doc(uid).get();
-                if (!snap.exists) continue;
-                const data = snap.data();
-                const isMe = uid === currentUser.uid;
-                html += `<div class="user-row" style="${isMe ? 'border-right-color: #fcd34d;' : ''}">
-                    <div class="avatar">${getAvatarChar(data.name)}</div>
-                    <div><div class="name">${data.name} ${isMe ? '⭐' : ''}</div>
-                    <div class="sub">نقاط: ${data.points || 0}</div></div>
-                </div>`;
-            }
-            container.innerHTML = html;
-        } catch (e) { container.innerHTML = 'خطأ'; }
-    }
-
-    // ===== للمخدوم: تاريخ آخر تحديث =====
-    async function loadClientHistory() {
-        try {
-            const snap = await db.collection('notifications')
-                .where('userId', '==', currentUser.uid)
-                .orderBy('timestamp', 'desc')
-                .limit(1)
-                .get();
-            if (!snap.empty) {
-                const data = snap.docs[0].data();
-                document.getElementById('lastUpdateBy').innerText = data.performer || 'مجهول';
-            } else {
-                document.getElementById('lastUpdateBy').innerText = 'لا يوجد تحديثات';
-            }
-        } catch (e) { /* ignore */ }
-    }
-
-    // ===== خروج =====
-    window.logout = function() { auth.signOut(); location.reload(); };
-
-    // ===== استعادة الجلسة =====
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            const doc = await db.collection('users').doc(user.uid).get();
-            if (doc.exists) {
-                currentUser = { uid: user.uid, ...doc.data() };
-                if (currentUser.role === 'server') showServerPage();
-                else showClientPage();
-            }
-        }
+document.getElementById("signupForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const errBox = document.getElementById("signupError");
+  errBox.classList.remove("show");
+  const role = document.getElementById("signupRole").value;
+  const code = document.getElementById("servantCode").value;
+  if(role === "servant" && code !== SERVANT_CODE){
+    errBox.textContent = "كود الخادم غلط.";
+    errBox.classList.add("show");
+    return;
+  }
+  const name = document.getElementById("signupName").value.trim();
+  const username = document.getElementById("signupUsername").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(usernameToEmail(username), password);
+    await db.collection("users").doc(cred.user.uid).set({
+      username, name, role, points:0, createdAt: Date.now()
     });
+  }catch(err){
+    errBox.textContent = err.message || "حصل خطأ، جرب تاني.";
+    errBox.classList.add("show");
+  }
+});
 
-    // تحديث دوري (كل 5 ثواني) للخادم عشان يشوف التغييرات
-    setInterval(() => {
-        if (currentUser && currentUser.role === 'server') {
-            loadClients();
-            loadStats();
-            loadRooms();
-        }
-    }, 5000);
+document.getElementById("logoutBtn").onclick = () => auth.signOut();
+
+/* =========================================================
+   4) الداشبورد
+   ========================================================= */
+let me = null;
+let unsubLeaderboard = null;
+
+auth.onAuthStateChanged(async (user)=>{
+  if(!user){
+    document.getElementById("authShell").classList.remove("hidden");
+    document.getElementById("dashboardShell").classList.add("hidden");
+    if(unsubLeaderboard) unsubLeaderboard();
+    return;
+  }
+  const snap = await db.collection("users").doc(user.uid).get();
+  if(!snap.exists) return;
+  me = { id: snap.id, ...snap.data() };
+
+  document.getElementById("authShell").classList.add("hidden");
+  document.getElementById("dashboardShell").classList.remove("hidden");
+  document.getElementById("userName").textContent = me.name;
+  document.getElementById("userRole").textContent = me.role === "servant" ? "خادم" : "مخدوم";
+  document.getElementById("camperView").classList.toggle("hidden", me.role !== "camper");
+  document.getElementById("servantView").classList.toggle("hidden", me.role === "camper");
+
+  startLeaderboard();
+});
+
+document.querySelectorAll(".nav-tab").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".nav-tab").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
+    if(btn.dataset.tab === "schedule") initSchedule();
+  };
+});
+
+function startLeaderboard(){
+  if(unsubLeaderboard) unsubLeaderboard();
+  unsubLeaderboard = db.collection("users").where("role","==","camper").orderBy("points","desc")
+    .onSnapshot(snap=>{
+      const list = [];
+      snap.forEach(d=>list.push({id:d.id, ...d.data()}));
+      if(me.role === "camper") renderLeaderboardReadOnly(list);
+      else renderServantList(list);
+    });
+}
+
+function renderLeaderboardReadOnly(list){
+  const meInList = list.find(u=>u.id===me.id);
+  if(meInList) me.points = meInList.points;
+  document.getElementById("myPoints").textContent = me.points ?? 0;
+  const idx = list.findIndex(u=>u.id===me.id);
+  document.getElementById("myRank").textContent = idx>=0 ? "#"+(idx+1) : "—";
+
+  const ul = document.getElementById("leaderboardList");
+  ul.innerHTML = "";
+  list.slice(0,20).forEach((u,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `<div class="rank-num">${i+1}</div><div class="lb-name">${u.name}</div><div class="lb-points">${u.points ?? 0}</div>`;
+    ul.appendChild(li);
+  });
+}
+
+let currentList = [];
+function renderServantList(list){ currentList = list; applyFilterAndRender(); }
+
+document.getElementById("searchCamper").addEventListener("input", applyFilterAndRender);
+
+function applyFilterAndRender(){
+  const term = document.getElementById("searchCamper").value.trim().toLowerCase();
+  const filtered = currentList.filter(u=>u.name.toLowerCase().includes(term));
+  const container = document.getElementById("camperList");
+  container.innerHTML = "";
+  if(!filtered.length){
+    container.innerHTML = `<div class="empty-note">مفيش مخدومين بالاسم ده</div>`;
+    return;
+  }
+  filtered.forEach(u=>{
+    const row = document.createElement("div");
+    row.className = "camper-row";
+    row.innerHTML = `
+      <div class="camper-name">${u.name}</div>
+      <div class="camper-points">${u.points ?? 0}</div>
+      <div class="quick-btns">
+        <button class="quick-btn" data-amt="1">+1</button>
+        <button class="quick-btn" data-amt="5">+5</button>
+        <button class="quick-btn joy" data-amt="10" data-reason="فرحة">+10 فرحة</button>
+        <button class="custom-btn">تحديد</button>
+      </div>`;
+    row.querySelectorAll(".quick-btn").forEach(btn=>{
+      btn.onclick = () => addPoints(u, Number(btn.dataset.amt), btn.dataset.reason || "");
+    });
+    row.querySelector(".custom-btn").onclick = () => openCustomModal(u);
+    container.appendChild(row);
+  });
+}
+
+async function addPoints(user, amount, reason){
+  await db.collection("users").doc(user.id).update({
+    points: firebase.firestore.FieldValue.increment(amount)
+  });
+  await db.collection("pointsLog").add({
+    toUid:user.id, toName:user.name, amount, reason: reason||"",
+    fromUid: me.id, fromName: me.name,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+const modal = document.getElementById("customModal");
+let modalTarget = null;
+function openCustomModal(user){
+  modalTarget = user;
+  document.getElementById("customModalName").textContent = "إضافة نقط لـ " + user.name;
+  document.getElementById("customAmount").value = 5;
+  document.getElementById("customReason").value = "";
+  modal.classList.add("show");
+}
+document.getElementById("customCancel").onclick = () => modal.classList.remove("show");
+document.getElementById("customConfirm").onclick = () => {
+  const amount = Number(document.getElementById("customAmount").value);
+  const reason = document.getElementById("customReason").value;
+  if(!modalTarget || !amount) return;
+  addPoints(modalTarget, amount, reason);
+  modal.classList.remove("show");
+};
+
+/* =========================================================
+   5) البرنامج
+   ========================================================= */
+let activeDayId = null;
+let tickHandle = null;
+
+function itemDate(it){ return new Date(it.date+"T"+it.time+":00"); }
+
+function pickDefaultDay(now){
+  for(const day of SCHEDULE){
+    const last = day.items[day.items.length-1];
+    if(now <= itemDate(last)) return day.id;
+  }
+  return SCHEDULE[SCHEDULE.length-1].id;
+}
+
+function formatCountdown(ms){
+  if(ms<0) return "دلوقتي";
+  const totalMin = Math.floor(ms/60000);
+  const h = Math.floor(totalMin/60), m = totalMin%60;
+  return h>0 ? `${h} س ${m} د` : `${m} دقيقة`;
+}
+
+function initSchedule(){
+  const now = new Date();
+  if(!activeDayId) activeDayId = pickDefaultDay(now);
+
+  function redraw(){
+    const currentNow = new Date();
+    renderDayTabs();
+    renderNowStrip(currentNow);
+    renderTimeline(currentNow);
+  }
+  redraw();
+  if(tickHandle) clearInterval(tickHandle);
+  tickHandle = setInterval(redraw, 30000);
+}
+
+function renderDayTabs(){
+  const container = document.getElementById("dayTabs");
+  container.innerHTML = "";
+  SCHEDULE.forEach(day=>{
+    const btn = document.createElement("button");
+    btn.className = "day-tab" + (day.id===activeDayId ? " active":"");
+    btn.innerHTML = `${day.label}<span class="d-date">${day.dateLabel}</span>`;
+    btn.onclick = () => { activeDayId = day.id; initSchedule(); };
+    container.appendChild(btn);
+  });
+}
+
+function renderNowStrip(now){
+  const container = document.getElementById("nowStrip");
+  const day = SCHEDULE.find(d=>d.id===activeDayId);
+  const items = day.items.map(it=>({...it, dt:itemDate(it)}));
+  let current=null, next=null;
+  for(let i=0;i<items.length;i++){
+    if(items[i].dt<=now && (!items[i+1] || items[i+1].dt>now)){ current=items[i]; next=items[i+1]||null; }
+  }
+  if(!current){
+    if(items.length && now<items[0].dt){
+      container.innerHTML = `<div><div class="now-label">لسه البرنامج ما بدأش</div>
+        <div class="now-activity">${items[0].title} على وشك يبدأ</div></div>
+        <div class="now-countdown">هيبدأ بعد<br><b>${formatCountdown(items[0].dt-now)}</b></div>`;
+    }else{
+      container.innerHTML = `<div><div class="now-label">النهارده</div>
+        <div class="now-activity">برنامج اليوم خلص 🎉</div></div>`;
+    }
+    return;
+  }
+  let countdownHtml = next ? `<div class="now-countdown">${next.title} بعد<br><b>${formatCountdown(next.dt-now)}</b></div>` : "";
+  container.innerHTML = `<div><div class="now-label">دلوقتي</div>
+    <div class="now-activity">${current.title}</div></div>${countdownHtml}`;
+}
+
+function renderTimeline(now){
+  const container = document.getElementById("timeline");
+  const day = SCHEDULE.find(d=>d.id===activeDayId);
+  container.innerHTML = "";
+  const items = day.items.map(it=>({...it, dt:itemDate(it)}));
+  items.forEach((item,idx)=>{
+    const next = items[idx+1];
+    const isCurrent = item.dt<=now && (!next || next.dt>now);
+    const isPast = next ? next.dt<=now : (item.dt<now && !isCurrent);
+    const row = document.createElement("div");
+    row.className = "timeline-item" + (isCurrent?" current":"") + (isPast && !isCurrent ? " past":"");
+    row.innerHTML = `<div class="ti-time">${item.time}</div><div class="ti-title">${item.title}</div>`;
+    container.appendChild(row);
+  });
+}
 </script>
 </body>
 </html>
